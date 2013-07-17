@@ -1,0 +1,62 @@
+<config>
+    <pre_install_packages>
+        <app_package id= "app">app</app_package>
+    </pre_install_packages>
+    <xFace>
+        <!-- Preferences for android -->
+        <preference name="LogLevel" value="DEBUG" />
+        <!-- 配置是否显示全屏 -->
+        <preference name="FullScreen" value="false" />
+        <!-- 配置splash是否显示 -->
+        <preference name="ShowSplashScreen" value="true" />
+        <!-- 配置splash显示的时间 单位ms -->
+        <preference name="SplashScreenDelayDuration" value="2000" />
+        <!-- 配置splash是否自动隐藏 -->
+        <preference name="AutoHideSplashScreen" value="true" />
+        <!-- 工作目录设定策略，1：仅手机内存;2：仅外部存储（FlashROM及SD/TF扩展卡）;3：外部存储优先  -->
+        <preference name="WorkDir" value="3" />
+        <preference name="EngineVersion" value="3.1.x" />
+        <preference name="EngineBuild" value="12345" />
+        <!-- 配置检测更新的服务器地址 -->
+        <preference name="CheckUpdate" value="false" />
+        <preference name="UpdateAddress" value="" />
+        <!-- 加载应用时等待xface.js是否加载完成的时间 -->
+        <preference name="LoadUrlTimeout" value="5000" />
+    </xFace>
+    <extensions>
+        <extension name="Accelerometer" value="com.polyvi.xface.extension.XAccelerometerExt" />
+        <extension name="App" value="com.polyvi.xface.extension.XAppExt" />
+        <extension name="Battery" value="com.polyvi.xface.extension.XBatteryExt" />
+        <extension name="Camera" value="com.polyvi.xface.extension.XCameraExt" />
+        <extension name="Compass" value="com.polyvi.xface.extension.XCompassExt" />
+        <extension name="Console" value="com.polyvi.xface.extension.XConsoleExt" />
+        <extension name="Device" value="com.polyvi.xface.extension.XDeviceExt" />
+        <extension name="Messaging" value="com.polyvi.xface.extension.XMessagingExt" />
+        <extension name="NetworkConnection" value="com.polyvi.xface.extension.XNetworkConnectionExt" />
+        <extension name="Notification" value="com.polyvi.xface.extension.XNotificationExt" />
+        <extension name="Security" value="com.polyvi.xface.extension.XSecurityExt" />
+        <extension name="Storage" value="com.polyvi.xface.extension.XStorageExt" />
+        <extension name="Telephony" value="com.polyvi.xface.extension.XTelephonyExt" />
+        <extension name="Contacts" value="com.polyvi.xface.extension.contact.XContactsExt" />
+        <extension name="File" value="com.polyvi.xface.extension.file.XFileExt" />
+        <extension name="Capture" value="com.polyvi.xface.extension.capture.XCaptureExt" />
+        <extension name="Audio" value="com.polyvi.xface.extension.audio.XAudioExt" />
+        <extension name="FileTransfer" value="com.polyvi.xface.extension.filetransfer.XFileTransferExt" />
+        <extension name="AdvancedFileTransfer" value="com.polyvi.xface.extension.advancedfiletransfer.XAdvancedFileTransferExt" />
+        <extension name="Video" value="com.polyvi.xface.extension.video.XVideoExt" />
+        <extension name="UPPay" value="com.polyvi.xface.extension.XUPPayExt" />
+        <extension name="Zip" value="com.polyvi.xface.extension.XZipExt" />
+        <extension name="Calendar" value="com.polyvi.xface.extension.XCalendarExt" />
+        <extension name="BarcodeScanner" value="com.polyvi.xface.extension.zbar.XZBarExt" />
+        <extension name="PushNotification" value="com.polyvi.xface.extension.push.XPushNotificationExt" />
+        <extension name="Echo" value="com.polyvi.xface.extension.XEchoExt" />
+        <extension name="SplashScreen" value="com.polyvi.xface.extension.XSplashScreenExt" />
+        <extension name="TrafficStats" value="com.polyvi.xface.extension.trafficstats.XTrafficStatsExt" />
+        <extension name="InAppBrowser" value="com.polyvi.xface.extension.inappbrowser.XInAppBrowserExt" />
+        <extension name="IdleWatcher" value="com.polyvi.xface.extension.XIdleWatcherExt" />
+        <extension name="EcoPay" value="com.polyvi.xface.extension.XEcoPayExt" />
+        <extension name="XMLHttpRequest" value="com.polyvi.xface.extension.xmlhttprequest.XXMLHttpRequestExt" />
+        <extension name="StatusBarNotification" value="com.polyvi.xface.extension.XStatusBarNotificationExt" />  
+        <extension name="SoftKeyBoard" value="com.polyvi.xface.extension.XSoftKeyBoardtExt" />    
+    </extensions>
+</config>
