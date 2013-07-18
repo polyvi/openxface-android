@@ -14,7 +14,7 @@ def runCommand(command_str):
     return output.returncode
 
 def generateXFaceJs():
-    commonFilePath = os.path.normpath(os.path.join(os.path.dirname(os.path.realpath(__file__)),r"../../../xface/js/xface_js_generater",GENERATEFILENAME))
+    commonFilePath = os.path.normpath(os.path.join(os.path.dirname(os.path.realpath(__file__)),r"../../../xface/js/generater",GENERATEFILENAME))
     print commonFilePath
     destFilePath = os.path.join(os.path.dirname(os.path.realpath(__file__)),"res/raw/xface.js")
     appsDir =  os.path.join(os.path.dirname(os.path.realpath(__file__)),"assets/data")

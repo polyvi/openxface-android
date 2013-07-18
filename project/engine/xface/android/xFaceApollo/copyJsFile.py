@@ -13,7 +13,7 @@ def runCommand(command_str):
     return output.returncode
 
 def copyXFaceJsToAppsDir():
-    commonFilePath = os.path.normpath(os.path.join(os.path.dirname(os.path.realpath(__file__)),r"../../../xface/js/xface_js_generater",COPYFILENAME))
+    commonFilePath = os.path.normpath(os.path.join(os.path.dirname(os.path.realpath(__file__)),r"../../../xface/js/generater",COPYFILENAME))
     destFilePath = os.path.join(os.path.dirname(os.path.realpath(__file__)),"res/raw/xface.js")
     appsDir =  os.path.join(os.path.dirname(os.path.realpath(__file__)),"assets/data")
     runCommand("python " + commonFilePath + " " + destFilePath + " " + appsDir)
