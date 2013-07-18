@@ -35,6 +35,7 @@ import android.webkit.WebSettings;
 import android.webkit.WebView;
 
 import com.polyvi.xface.app.XApplication;
+import com.polyvi.xface.app.XWhiteList;
 import com.polyvi.xface.core.XConfiguration;
 import com.polyvi.xface.core.XISystemContext;
 import com.polyvi.xface.core.XJSNativeBridge;
@@ -136,6 +137,13 @@ public class XAppWebView extends WebView{
      * 加载app
      */
     private void loadApp(String url) {
+        /**白名单检查*/
+        XWhiteList whiteList = mOwnerApp.getAppInfo().getWhiteList();
+        if(!url.startsWith("file://")  &&
+                (null != whiteList && !whiteList.isUrlWhiteListed(url))) {
+            XLog.e(CLASS_NAME, "url is not in white list");
+            return;
+        }
         loadTimeoutCheck();
         this.loadUrl(url);
         this.setOnLongClickListener(new View.OnLongClickListener() {
@@ -222,8 +230,8 @@ public class XAppWebView extends WebView{
         }
         // 通过app方式加载url
         if (!openExternal) {
-            // TODO:在此处要检查url是否在白名单中,xFace目前没有实现且params目前未用到
-            if (url.startsWith("file://") || url.startsWith("http://")) {
+            XWhiteList whiteList  = mOwnerApp.getAppInfo().getWhiteList();
+            if (url.startsWith("file://") || whiteList.isUrlWhiteListed(url)) {
                 // 加载app
                 this.loadApp(url);
                 return;

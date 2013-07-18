@@ -45,6 +45,7 @@ import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.VideoView;
 
+import com.polyvi.xface.app.XWhiteList;
 import com.polyvi.xface.event.XEvent;
 import com.polyvi.xface.event.XEventType;
 import com.polyvi.xface.event.XIWebAppEventListener;
@@ -249,6 +250,12 @@ public class XWebChromeClient extends WebChromeClient implements
     @Override
     public boolean onJsPrompt(WebView view, String url, String message,
             String defaultValue, JsPromptResult result) {
+        /**安全检查确保请求合法*/
+        boolean reqOk = false;
+        XWhiteList whiteList = mAppWebView.getOwnerApp().getAppInfo().getWhiteList();
+        if (url.startsWith("file://") || (null != whiteList && whiteList.isUrlWhiteListed(url))) {
+            reqOk = true;
+        }
         // TODO check 安全性 prompt是否来自于发起该url的page
         JsCommandType command = resolvePromptCommand(defaultValue);
         XIWebAppEventListener evtListener = mAppWebView.getAppEventListener();
@@ -258,18 +265,20 @@ public class XWebChromeClient extends WebChromeClient implements
         }
         switch (command) {
         case COMMAND_EXECUTE_EXTENSION: {
-            try {
-                final JSONArray array = new JSONArray(
-                        defaultValue.substring(TOKEN_EXECUTE_EXTENSION.length()));
-                String extName = array.getString(0);
-                final String action = array.getString(1);
-                final String callbackId = array.getString(2);
-                String r = mAppWebView.getOwnerApp().getJSNativeBridge()
-                        .exec(extName, action, callbackId, message);
-                result.confirm(r == null ? "" : r);
-            } catch (JSONException e) {
-                e.printStackTrace();
-                return false;
+            if(reqOk) {
+                try {
+                    final JSONArray array = new JSONArray(
+                            defaultValue.substring(TOKEN_EXECUTE_EXTENSION.length()));
+                    String extName = array.getString(0);
+                    final String action = array.getString(1);
+                    final String callbackId = array.getString(2);
+                    String r = mAppWebView.getOwnerApp().getJSNativeBridge()
+                            .exec(extName, action, callbackId, message);
+                    result.confirm(r == null ? "" : r);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                    return false;
+                }
             }
         }
             break;
@@ -339,15 +348,19 @@ public class XWebChromeClient extends WebChromeClient implements
         }
             break;
         case COMMAND_GAP_BRIDGE_MODE:
-            int value = Integer.parseInt(message);
-            mAppWebView.getOwnerApp().getJSNativeBridge()
-                    .setNativeToJsBridgeMode(value);
-            result.confirm("");
+            if(reqOk) {
+                int value = Integer.parseInt(message);
+                mAppWebView.getOwnerApp().getJSNativeBridge()
+                        .setNativeToJsBridgeMode(value);
+                result.confirm("");
+            }
             break;
         case COMMAND_GAP_POLL:
-            String r = mAppWebView.getOwnerApp().getJSNativeBridge()
-                    .retrieveJsMessages();
-            result.confirm(r == null ? "" : r);
+            if(reqOk) {
+                String r = mAppWebView.getOwnerApp().getJSNativeBridge()
+                        .retrieveJsMessages();
+                result.confirm(r == null ? "" : r);
+            }
             break;
         case COMMAND_DEFAULT:
             showPrompt(message, defaultValue, result);

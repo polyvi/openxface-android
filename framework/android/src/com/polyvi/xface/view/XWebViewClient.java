@@ -21,6 +21,7 @@
 
 package com.polyvi.xface.view;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.security.KeyStore;
@@ -42,6 +43,7 @@ import android.webkit.WebResourceResponse;
 import android.webkit.WebView;
 import android.webkit.WebViewClientClassicExt;
 
+import com.polyvi.xface.app.XWhiteList;
 import com.polyvi.xface.core.XConfiguration;
 import com.polyvi.xface.core.XISystemContext;
 import com.polyvi.xface.event.XIWebAppEventListener;
@@ -115,6 +117,7 @@ public class XWebViewClient extends WebViewClientClassicExt {
     @Override
     public boolean shouldOverrideUrlLoading(WebView view, String url) {
         try {
+            XWhiteList whiteList= mWebAppView.getOwnerApp().getAppInfo().getWhiteList();
             if (url.startsWith("tel")
                     && !XConfiguration.getInstance().isTelLinkEnabled()) {
                 return true;
@@ -123,7 +126,8 @@ public class XWebViewClient extends WebViewClientClassicExt {
             else if (url.startsWith(XConstant.FILE_SCHEME)
                     || url.startsWith("data:")
                     || url.startsWith(XConstant.HTTP_SCHEME)
-                    || url.startsWith(XConstant.HTTPS_SCHEME)) {
+                    || url.startsWith(XConstant.HTTPS_SCHEME)
+                    || (null != whiteList && whiteList.isUrlWhiteListed(url))) {
                 /**
                  * 由于三星I9003如果页面不存在会崩溃，所以这里对url进行预处理 如果url不存在给出错误提示
                  */
@@ -203,6 +207,12 @@ public class XWebViewClient extends WebViewClientClassicExt {
     @SuppressLint("Override")
     @TargetApi(11)
     public WebResourceResponse shouldInterceptRequest(WebView view, String url) {
+        /**如果url不在白名单中，则返回一个空白页面*/
+        XWhiteList whiteList = mWebAppView.getOwnerApp().getAppInfo().getWhiteList();
+        if((url.startsWith("http://") || url.startsWith("https://")) &&
+                (null != whiteList && !whiteList.isUrlWhiteListed(url))) {
+            return getWhitelistResponse();
+        }
         if (url.indexOf(XConstant.ASSERT_PROTACAL) == 0) {
             for (int i = 0; i < URL_PARAMS_TAG.length; i++) {
                 if (url.contains(URL_PARAMS_TAG[i])) {
@@ -270,4 +280,11 @@ public class XWebViewClient extends WebViewClientClassicExt {
         }
     }
 
+    /**返回白名单响应页面*/
+    @SuppressLint("NewApi")
+    private WebResourceResponse getWhitelistResponse() {
+        String empty = "";
+        ByteArrayInputStream data = new ByteArrayInputStream(empty.getBytes());
+        return new WebResourceResponse("text/plain", "UTF-8", data);
+    }
 }

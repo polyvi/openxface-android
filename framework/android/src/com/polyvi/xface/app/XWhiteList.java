@@ -41,6 +41,8 @@ public class XWhiteList {
     private ArrayList<Pattern> mWhiteList = new ArrayList<Pattern>();
     /**应用访问白名单的历史缓存，用于提高检查速度*/
     private HashMap<String, Boolean> mWhiteListCache = new HashMap<String, Boolean>();
+    /**标示访问url是否无限制*/
+    private boolean mAccessNoLimit = true;
 
     /**
      * 添加允许访问的URL (白名单)
@@ -53,6 +55,7 @@ public class XWhiteList {
             XLog.w(CLASS_NAME, "origin attribute is absent in access");
             return;
         }
+        mAccessNoLimit = false;
         mWhiteList.add(Pattern.compile(getRexPattern(origin,
                 (subdomains != null) && (subdomains.compareToIgnoreCase("true") == 0))));
     }
@@ -64,6 +67,10 @@ public class XWhiteList {
      * @return true：在白名单中，false：不在白名单中
      */
     public boolean isUrlWhiteListed(String url) {
+        /** 如果对访问无限制，则直接返回true */
+        if(mAccessNoLimit) {
+            return true;
+        }
         /** 首先在白名单缓存中检查是否存在url，如果有就直接返回true */
          if (mWhiteListCache.get(url) != null) {
             return true;

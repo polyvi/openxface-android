@@ -56,6 +56,7 @@ import org.json.JSONObject;
 import android.webkit.CookieManager;
 import android.webkit.CookieSyncManager;
 
+import com.polyvi.xface.app.XWhiteList;
 import com.polyvi.xface.extension.XCallbackContext;
 import com.polyvi.xface.extension.XExtension;
 import com.polyvi.xface.extension.XExtensionContext;
@@ -175,6 +176,12 @@ public class XFileTransferExt extends XExtension {
                 JSONObject error = createFileTransferError(FILE_NOT_FOUND_ERR, source, target, connection);
                 XLog.e(CLASS_NAME, ILLEGAL_ARGUMENT_EXCEPTION_NAME_CONTAINS_COLON);
                 return new XExtensionResult(XExtensionResult.Status.ERROR, error);
+            }
+            XWhiteList whiteList  = mWebContext.getApplication().getAppInfo().getWhiteList();
+            if (null != whiteList && !whiteList.isUrlWhiteListed(source)) {
+                XLog.e(CLASS_NAME, "Source URL is not in white list: '" + source + "'");
+                JSONObject error = createFileTransferError(CONNECTION_ERR, source, target, connection);
+                return new XExtensionResult(XExtensionResult.Status.IO_EXCEPTION, error);
             }
             File file = new File(appWorkSpace, target);
 

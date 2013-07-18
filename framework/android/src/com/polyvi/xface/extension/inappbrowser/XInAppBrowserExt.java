@@ -35,6 +35,7 @@ import android.net.NetworkInfo;
 import android.net.Uri;
 import android.util.Log;
 
+import com.polyvi.xface.app.XWhiteList;
 import com.polyvi.xface.extension.XCallbackContext;
 import com.polyvi.xface.extension.XExtension;
 import com.polyvi.xface.extension.XExtensionResult;
@@ -116,7 +117,11 @@ public class XInAppBrowserExt extends XExtension implements XIBrowserListener {
                 // SELF：当前xface页面打开
                 if (SELF.equals(target)) {
                     // 在当前页面加载Url
+                    XWhiteList whiteList = this.mWebContext.getApplication().getAppInfo().getWhiteList();
+                    if (url.startsWith("file://") || url.startsWith("javascript:")
+                            || (null != whiteList && whiteList.isUrlWhiteListed(url))) {
                         loadUrlInAppView(mWebContext.getApplication().getView(), url);
+                    }
                 }
                 // SYSTEM：系统浏览器打开
                 else if (SYSTEM.equals(target)) {
