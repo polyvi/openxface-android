@@ -4,7 +4,7 @@ This is Android port for openxface.
 
 ##Get started with the source
 ###Requirement
-+ Android runtime enviroment (ADT 22.0.X)
++ Android runtime enviroment (ADT 21.0.X)
 + Eclipse 3.8.0 or higher
 + Python 2.7.x
 + [Jake](https://github.com/mde/jake) (to build js, better install it globally)
@@ -30,7 +30,7 @@ This is Android port for openxface.
 
 ##如何使用源码
 ###开发环境
-+ Android运行环境（ADT 22.0.x）
++ Android运行环境（ADT 21.0.x）
 + eclipse 3.8.0或更高版本
 + Python 2.7.x
 
