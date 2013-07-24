@@ -81,7 +81,7 @@ function androidExec(success, fail, statusChanged, service, action, args) {
     }
 
     if (jsToNativeBridgeMode == jsToNativeModes.LOCATION_CHANGE) {
-        //window.location = 'http://cdv_exec/' + service + '#' + action + '#' + callbackId + '#' + argsJson;
+        window.location = 'http://xface_exec/' + service + '#' + action + '#' + callbackId + '#' + argsJson;
     } else {
         var messages = nativeApiProvider.get().exec(service, action, callbackId, argsJson);
         // If argsJson was received by Java as null, try again with the PROMPT bridge mode.

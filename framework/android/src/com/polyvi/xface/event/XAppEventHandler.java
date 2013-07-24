@@ -263,13 +263,13 @@ public class XAppEventHandler implements XISystemEventReceiver,
 
     @Override
     public void onPageStarted(XAppWebView view) {
+        this.mOwnerApp.resetJsMessageQueue();
         // 在页面加载时，将该页面的返回键，控件音量的键重写状态置为false
         int viewId = view.getViewId();
         setOverrideBackbutton(viewId, false);
         setOverrideVolumeButtonDown(viewId, false);
         setOverrideVolumeButtonUp(viewId, false);
         // app的页面发生切换，所以该app一定存在不为空
-        mOwnerApp.clearJsCallback();
         // 当页面切换时，通知每个 ext，例如，有需要在 ext 中销毁创建的本地对象的，就可以在此实现
         mExtensionManager.onPageStarted();
     }

@@ -23,13 +23,13 @@
 var nativeApi = this._addJavaInterface || require('xFace/extension/android/promptbasednativeapi');
 var currentApi = nativeApi;
 module.exports = {
-	get: function() {
-		return currentApi;
-	},
-	setPreferPrompt: function(value) {
-		currentApi = value ? require('xFace/extension/android/promptbasednativeapi') : nativeApi;
-	},
-	set: function(value) {
-		currentApi = value;
-	}
+    get: function() {
+        return currentApi;
+    },
+    setPreferPrompt: function(value) {
+        currentApi = value ? require('xFace/extension/android/promptbasednativeapi') : nativeApi;
+    },
+    set: function(value) {
+        currentApi = value;
+    }
 };

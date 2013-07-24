@@ -23,7 +23,7 @@
 ﻿
  /**
  * TrafficStats模块提供流量统计功能
- * @module trafficStats 
+ * @module trafficStats
  * @main trafficStats
  */
 
@@ -60,7 +60,7 @@ TrafficStats.prototype.getMobileTraffic = function(successCallback, errorCallbac
 /**
  * 获取Wifi网络流量
   @example
-        xFace.getWifiTraffic(  
+        xFace.getWifiTraffic(
         function(trafficData)
         {
             alert(trafficData);

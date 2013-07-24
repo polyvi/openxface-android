@@ -21,13 +21,13 @@
 */
 
 module.exports = {
-	exec: function(service, action, callbackId, argsJson) {
-		return prompt(argsJson, "_xFace_jsscript:" + JSON.stringify([service, action, callbackId, true]));
-	},
-	setNativeToJsBridgeMode: function(value) {
-		prompt(value, 'gap_bridge_mode:');
-	},
-	retrieveJsMessages: function() {
-		return prompt('', 'gap_poll:');
-	}
+    exec: function(service, action, callbackId, argsJson) {
+        return prompt(argsJson, "_xFace_jsscript:" + JSON.stringify([service, action, callbackId, true]));
+    },
+    setNativeToJsBridgeMode: function(value) {
+        prompt(value, 'gap_bridge_mode:');
+    },
+    retrieveJsMessages: function() {
+        return prompt('', 'gap_poll:');
+    }
 };

@@ -46,7 +46,6 @@ import com.polyvi.xface.event.XSystemEventCenter;
 import com.polyvi.xface.extension.XExtensionContext;
 import com.polyvi.xface.extension.XExtensionManager;
 import com.polyvi.xface.extension.XExtensionResult;
-import com.polyvi.xface.extension.XJsCallback;
 import com.polyvi.xface.plugin.api.XIWebContext;
 import com.polyvi.xface.plugin.api.XPluginBase;
 import com.polyvi.xface.plugin.api.XPluginLoader;
@@ -78,12 +77,6 @@ public class XApplication implements XIApplication, XIWebContext {
 
     /** app的workspace */
     private String mWorkSpace = "";
-
-    /**
-     * 记录app注册的扩展回调,key是native端回调的id(XJsCallback的id)，value是native端的回调(
-     * XJsCallback对象)
-     */
-    private ConcurrentHashMap<String, XJsCallback> mAppRegisteredCallback;
 
     /** 用于存放App的通信数据 */
     private Map<String, Object> mDatas;
@@ -302,69 +295,6 @@ public class XApplication implements XIApplication, XIWebContext {
      */
     public Iterator<char[]> getResourceIterator(XIResourceFilter filter) {
         return mRunningMode.createResourceIterator(this, filter);
-    }
-
-    /**
-     * 注册某一扩展的js回调
-     *
-     * @param id
-     *            要注册的回调的id
-     * @param callback
-     *            要注册的回调
-     * */
-    synchronized public void registerJsCallback(String id, XJsCallback callback) {
-        if (null == mAppRegisteredCallback) {
-            mAppRegisteredCallback = new ConcurrentHashMap<String, XJsCallback>();
-        }
-        mAppRegisteredCallback.put(id, callback);
-    }
-
-    /**
-     * 反注册某一扩展的js回调
-     *
-     * @param id
-     *            要反注册的回调的id
-     * */
-    synchronized public void unregisterJsCallback(String id) {
-        if (null != mAppRegisteredCallback) {
-            mAppRegisteredCallback.remove(id);
-        }
-    }
-
-    /**
-     * 获取某一扩展的回调
-     *
-     * @param id
-     *            回调所对应的id
-     * */
-    public XJsCallback getCallback(String id) {
-        if (null == mAppRegisteredCallback) {
-            return null;
-        }
-        return mAppRegisteredCallback.get(id);
-    }
-
-    /**
-     * 清除回调,该步骤会在页面切换时执行
-     * */
-    public void clearJsCallback() {
-        if (null != mAppRegisteredCallback) {
-            mAppRegisteredCallback.clear();
-        }
-    }
-
-    /**
-     * app中是否还有指定id的回调
-     *
-     * @param id
-     *            回调所对应的id
-     * @return true app中还有注册的回调 false app中没有注册的回调
-     * */
-    public boolean hasCallback(String id) {
-        if (null == mAppRegisteredCallback) {
-            return false;
-        }
-        return mAppRegisteredCallback.containsKey(id);
     }
 
     /**
@@ -747,6 +677,13 @@ public class XApplication implements XIApplication, XIWebContext {
     @Override
     public void sendExtensionResult(XExtensionResult result, String callbackId) {
         mJsMessageQueue.addPluginResult(result, callbackId);
+    }
+
+    /**
+     * 重置js消息队列
+     */
+    public void resetJsMessageQueue() {
+        mJsMessageQueue.reset();
     }
 
     /**

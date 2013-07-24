@@ -1,3 +1,4 @@
+
 /*
  This file was modified from or inspired by Apache Cordova.
 
@@ -17,7 +18,7 @@
  KIND, either express or implied. See the License for the
  specific language governing permissions and limitations
  under the License.
- */
+*/
 
 package com.polyvi.xface.view;
 
@@ -28,6 +29,8 @@ import java.security.KeyStore;
 import java.security.PrivateKey;
 import java.security.cert.X509Certificate;
 import java.util.Enumeration;
+
+import org.json.JSONException;
 
 import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
@@ -46,6 +49,7 @@ import android.webkit.WebViewClientClassicExt;
 import com.polyvi.xface.app.XWhiteList;
 import com.polyvi.xface.core.XConfiguration;
 import com.polyvi.xface.core.XISystemContext;
+import com.polyvi.xface.core.XNativeToJsMessageQueue;
 import com.polyvi.xface.event.XIWebAppEventListener;
 import com.polyvi.xface.ssl.XSSLManager;
 import com.polyvi.xface.util.XConstant;
@@ -65,6 +69,7 @@ public class XWebViewClient extends WebViewClientClassicExt {
     /** < 用来处理input框获得焦点自动变大的问题 */
     private XISystemContext mSystemContext;
     private String[] URL_PARAMS_TAG = { "#", "?" };
+    private static final String XFACE_EXEC_URL_PREFIX = "http://xface_exec/";
 
     public XWebViewClient(XISystemContext systemContext, XAppWebView appWebView) {
         mWebAppView = appWebView;
@@ -117,7 +122,14 @@ public class XWebViewClient extends WebViewClientClassicExt {
     @Override
     public boolean shouldOverrideUrlLoading(WebView view, String url) {
         try {
-            XWhiteList whiteList= mWebAppView.getOwnerApp().getAppInfo().getWhiteList();
+            // 检查是否是一个exec()桥指令信息.
+            if (XNativeToJsMessageQueue.ENABLE_LOCATION_CHANGE_EXEC_MODE
+                    && url.startsWith(XFACE_EXEC_URL_PREFIX)) {
+                handleExecUrl(url);
+            }
+
+            XWhiteList whiteList = mWebAppView.getOwnerApp().getAppInfo()
+                    .getWhiteList();
             if (url.startsWith("tel")
                     && !XConfiguration.getInstance().isTelLinkEnabled()) {
                 return true;
@@ -166,6 +178,34 @@ public class XWebViewClient extends WebViewClientClassicExt {
         return false;
     }
 
+    /**
+     * 解析设置webView的url地址，并执行
+     *
+     * @param url
+     */
+    private void handleExecUrl(String url) {
+        try {
+            int idx1 = XFACE_EXEC_URL_PREFIX.length();
+            int idx2 = url.indexOf('#', idx1 + 1);
+            int idx3 = url.indexOf('#', idx2 + 1);
+            int idx4 = url.indexOf('#', idx3 + 1);
+            if (idx1 == -1 || idx2 == -1 || idx3 == -1 || idx4 == -1) {
+                XLog.e(CLASS_NAME, "Could not decode URL command: " + url);
+                return;
+            }
+            String service = url.substring(idx1, idx2);
+            String action = url.substring(idx2 + 1, idx3);
+            String callbackId = url.substring(idx3 + 1, idx4);
+            String jsonArgs = url.substring(idx4 + 1);
+            mWebAppView.getOwnerApp().getJSNativeBridge()
+                    .exec(service, action, callbackId, jsonArgs);
+        } catch (JSONException e) {
+            XLog.e(CLASS_NAME, "handleExecUrl: JSONException");
+            e.printStackTrace();
+            return;
+        }
+    }
+
     @Override
     public void onScaleChanged(WebView view, float oldScale, float newScale) {
         XLog.d("xface", "old " + oldScale + " new " + newScale);
@@ -175,7 +215,6 @@ public class XWebViewClient extends WebViewClientClassicExt {
     /**
      * 根据url启动系统程序 url 启动系统程序的url
      */
-
     private boolean startSysApplication(String url) {
         Intent intent = null;
         if (url.contains("content://media/external")) {
@@ -194,7 +233,7 @@ public class XWebViewClient extends WebViewClientClassicExt {
 
     /**
      * 对url进行处理，并返回处理结果。
-     *
+     * 
      * @param url
      *            要处理的url
      * @param return true:url已经被处理，false：未被处理。
@@ -207,10 +246,11 @@ public class XWebViewClient extends WebViewClientClassicExt {
     @SuppressLint("Override")
     @TargetApi(11)
     public WebResourceResponse shouldInterceptRequest(WebView view, String url) {
-        /**如果url不在白名单中，则返回一个空白页面*/
-        XWhiteList whiteList = mWebAppView.getOwnerApp().getAppInfo().getWhiteList();
-        if((url.startsWith("http://") || url.startsWith("https://")) &&
-                (null != whiteList && !whiteList.isUrlWhiteListed(url))) {
+        /** 如果url不在白名单中，则返回一个空白页面 */
+        XWhiteList whiteList = mWebAppView.getOwnerApp().getAppInfo()
+                .getWhiteList();
+        if ((url.startsWith("http://") || url.startsWith("https://"))
+                && (null != whiteList && !whiteList.isUrlWhiteListed(url))) {
             return getWhitelistResponse();
         }
         if (url.indexOf(XConstant.ASSERT_PROTACAL) == 0) {
@@ -280,7 +320,7 @@ public class XWebViewClient extends WebViewClientClassicExt {
         }
     }
 
-    /**返回白名单响应页面*/
+    /** 返回白名单响应页面 */
     @SuppressLint("NewApi")
     private WebResourceResponse getWhitelistResponse() {
         String empty = "";

@@ -48,7 +48,7 @@ public class XNativeToJsMessageQueue {
     private static final boolean FORCE_ENCODE_USING_EVAL = false;
 
     // 由于可能导致安全问问题 默认关闭通过url实现的桥接模式
-    static final boolean ENABLE_LOCATION_CHANGE_EXEC_MODE = false;
+    public static final boolean ENABLE_LOCATION_CHANGE_EXEC_MODE = false;
 
     // 标志 当执行exec期间，是否允许从native发送js message
     public static final boolean DISABLE_EXEC_CHAINING = false;

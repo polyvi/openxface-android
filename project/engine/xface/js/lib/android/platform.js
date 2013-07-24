@@ -121,7 +121,7 @@ module.exports = {
      * 当电话呼入时，会触发该事件（Android）<br/>
      * @example
             function onCallReceived(callStatus) {
-                //callStatus是字符串需要转换成整形   
+                //callStatus是字符串需要转换成整形
                 var callStatus = parseInt(CallStatus);
                 switch(callStatus){
                 case 0:
@@ -146,11 +146,11 @@ module.exports = {
      * @since 3.0.0
      */
     channel.onCallReceived = xFace.addDocumentEventHandler('callreceived');
-	
-	/**
+
+    /**
      * 当商圈退出的时候，会触发该事件（Android）<br/>
      * @example
-            function onCircleMessageReceived(status) {  
+            function onCircleMessageReceived(status) {
                 var status = parseInt(status);
                 switch(status){
                 case 0:
@@ -174,7 +174,7 @@ module.exports = {
      * @platform Android
      * @since 3.0.0
      */
-	channel.onCircleMessageReceived = xFace.addDocumentEventHandler('circlemessagereceived');
+    channel.onCircleMessageReceived = xFace.addDocumentEventHandler('circlemessagereceived');
 
     var storage = require('xFace/extension/android/storage');
 
@@ -233,7 +233,7 @@ module.exports = {
             TrafficStats:{
                 path: 'xFace/extension/android/TrafficStats'
             },
-            StatusBarNotification:{          
+            StatusBarNotification:{
                 path: 'xFace/extension/android/StatusBarNotification'
             },
             SoftKeyBoard:{
