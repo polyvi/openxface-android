@@ -22,6 +22,32 @@ This is Android port for openxface.
 5. Execute js.py to generate xface.js
 6. Run with your app in the emulator or in the device
 
+###Directory Structure
+
+	├── framework
+	|   ├── android
+	|	|   ├── libs
+	|	|   ├── src
+	|	|   └── contents.txt
+	├── project
+	|   ├── engine
+	|	|   ├── xface
+	|	|	|   ├── android
+	|	|	|	|   └── xFaceApolloPlayer
+	|	|	|   └── js
+	├── .gitignore
+	├── COPYING
+	├── NOTICE
+	└── README.md
+
+An overview of the main directories:
+
+| FILE / DIRECTORY         | DESCRIPTION                                             |
+| -------------------------| :-------------------------------------------------------|
+| framework/android            | This is where the openxface Android source code resides    |
+| project/engine/xface/android/xFaceApolloPlayer | Project files for xFacePlayer.              |
+| project/engine/xface/js  | These are the JavaScript source codes which will be used to generate xface.js |
+
 ##Further Reading
 + Please visit [openxface](http://polyvi.github.io/openxface/)
 
@@ -46,6 +72,32 @@ This is Android port for openxface.
     + 请把应用源码放到**sdcard/xFacePlayer/applications/app**下面
 5. 执行js.py生成xface.js
 6. 在模拟器或设备上运行
+
+###目录结构
+
+	├── framework
+	|   ├── android
+	|	|   ├── libs
+	|	|   ├── src
+	|	|   └── contents.txt
+	├── project
+	|   ├── engine
+	|	|   ├── xface
+	|	|	|   ├── android
+	|	|	|	|   └── xFaceApolloPlayer
+	|	|	|   └── js
+	├── .gitignore
+	├── COPYING
+	├── NOTICE
+	└── README.md
+
+主要目录说明:
+
+| FILE / DIRECTORY          | DESCRIPTION                         |
+| ------------------------- | :-----------------------------------|
+| framework/android         | 所有 openxface Android 源码所在目录   |
+| project/engine/xface/android/xFaceApolloPlayer | xFacePlayer 工程文件所在目录|
+| project/engine/xface/js   | 用于生成 xface.js 的 JavaScript 源码  |
 
 ##更多参考
 + 请访问[openxface](http://polyvi.github.io/openxface/)
