@@ -296,7 +296,8 @@ public class XCameraExt extends XExtension implements XActivityResultListener {
             if (mAllowEdit == false) {
                 photoSucess(intent);
             } else {
-                startCutPhoto(intent.getData());
+            	mImageUri = intent.getData();
+                startCutPhoto(mImageUri);
             }
         } else {
             if (resultCode != Activity.RESULT_OK || null == intent) {
@@ -552,6 +553,9 @@ public class XCameraExt extends XExtension implements XActivityResultListener {
 
     private void photoSucess(Intent intent) {
         Uri uri = intent.getData();
+        if(null == uri ) {
+            uri = mImageUri;
+        }
         ContentResolver resolver = getContext()
                 .getContentResolver();
         XPathResolver pathResolver = new XPathResolver(null == uri ? null : uri.toString(), "" ,getContext());
@@ -572,7 +576,6 @@ public class XCameraExt extends XExtension implements XActivityResultListener {
         }
         if (mDestType == DATA_URL) {
                 int rotate = 0;
-
                 String[] cols = { MediaStore.Images.Media.ORIENTATION };
                 Cursor cursor = resolver.query(uri, cols, null, null, null);
                 if (null != cursor) {

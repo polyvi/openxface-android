@@ -149,8 +149,8 @@ public class XStorageExt extends XExtension {
             if (isDDL(query)) {
                 mMyDb.execSQL(query);
                 String jsScript = "xFace.require('xFace/extension/android/storage').completeQuery('"
-                        + tx_id + "', '');";
-                callbackCtx.sendExtensionResult(jsScript);
+                + tx_id + "', '');";
+                mWebContext.getApplication().loadJavascript(jsScript);
             } else {
                 Cursor myCursor = mMyDb.rawQuery(query, params);
                 processResults(myCursor, tx_id, callbackCtx);
@@ -222,6 +222,6 @@ public class XStorageExt extends XExtension {
 
         String jsScript = "xFace.require('xFace/extension/android/storage').completeQuery('"
                 + tx_id + "', " + result + ");";
-        callbackCtx.sendExtensionResult(jsScript);
+        mWebContext.getApplication().loadJavascript(jsScript);
     }
 }
