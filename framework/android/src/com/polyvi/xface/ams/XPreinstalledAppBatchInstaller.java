@@ -75,6 +75,9 @@ public class XPreinstalledAppBatchInstaller extends XAbstractPreIntaller {
         List<XPreInstallPackageItem> apps = getPreInstallAppItems();
         for (XPreInstallPackageItem app : apps) {
             XIApplication application = buildApplication(app);
+            if ( null == application ) {
+                continue;
+            }
             File destFile = new File(XAppUtils.generateAppIconPath(
                     application.getAppId(), application.getAppInfo().getIcon()));
             XFileUtils
@@ -123,7 +126,7 @@ public class XPreinstalledAppBatchInstaller extends XAbstractPreIntaller {
         }
         XAppInfo info = XAppUtils.parseAppXml(is);
         if (null == info) {
-            XLog.e(CLASS_NAME, "startapp app.xml error.");
+            XLog.e(CLASS_NAME, "Preinstalled app app.xml config error.");
             return null;
         }
         if (!app.mPackageId.equals(info.getAppId())) {

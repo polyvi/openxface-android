@@ -38,6 +38,7 @@ import com.polyvi.xface.util.XAppUtils;
 import com.polyvi.xface.util.XConstant;
 import com.polyvi.xface.util.XFileUtils;
 import com.polyvi.xface.util.XLog;
+import com.polyvi.xface.util.XStrings;
 
 public class XSystemInitializer implements XSystemBootstrap,
         XIPreInstallListener {
@@ -137,6 +138,10 @@ public class XSystemInitializer implements XSystemBootstrap,
         } catch (IOException e) {
             XLog.e(CLASS_NAME, "Parse app.xml error!");
             e.printStackTrace();
+        } catch (NullPointerException e) {
+            XLog.e(CLASS_NAME, "app.xml Config Error.");
+            mActivity.toast(XStrings.getInstance().getString(
+                    XStrings.APP_CONFIG_ERROR));
         }
         return startAppInfo;
     }

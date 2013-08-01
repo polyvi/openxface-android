@@ -21,8 +21,6 @@
 
 package com.polyvi.xface.app;
 
-import java.util.HashSet;
-
 import com.polyvi.xface.util.XConstant;
 import com.polyvi.xface.util.XStringUtils;
 
@@ -44,8 +42,6 @@ public class XAppInfo extends XBasedAppInfo {
     /** 应用的运行模式：本地模式，在线模式 */
     private String mAppRunningMode;
 
-    /** 应用显示的方式 */
-    private String mDisplayMode;
     /** 定义此应用基于1.x or 3.x引擎运行，后面研究混合模式需要用到 */
     private String mEngineType;
     /** 渠道ID */
@@ -53,14 +49,17 @@ public class XAppInfo extends XBasedAppInfo {
     /** 渠道名称 */
     private String mChannelName;
 
-    /** 该应用能够所用的所有扩展 */
-    private HashSet<String> mAllowedExtensions;
-
     /** 该应用允许访问url的白名单 */
     private XWhiteList mWhiteList;
 
     /**app源码的root*/
     private String mSourceRoot;
+
+    public XAppInfo() {
+        mAppRunningMode = "local";
+        mChannelId = "";
+        mChannelName = "";
+    }
 
     /** 获取应用宽度 */
     public int getWidth() {
@@ -103,24 +102,6 @@ public class XAppInfo extends XBasedAppInfo {
     }
 
     /**
-     * 获取应用能使用的所有扩展
-     *
-     * @see XConstant#APP_TYPE_DEFAULT
-     */
-    public HashSet<String> getAllowedExtensions() {
-        return mAllowedExtensions;
-    }
-
-    /**
-     * 设置应用能使用的所有扩展
-     *
-     * @see XConstant#APP_TYPE_DEFAULT
-     */
-    public void setAllowedExtensions(HashSet<String> allowedExtensions) {
-        this.mAllowedExtensions = allowedExtensions;
-    }
-
-    /**
      * 获取应用允许访问的所有url的白名单
      *
      */
@@ -134,20 +115,6 @@ public class XAppInfo extends XBasedAppInfo {
      */
     public void setWhiteList(XWhiteList aWhiteList) {
         this.mWhiteList = aWhiteList;
-    }
-
-    /**
-     * 设置应用的显示方式
-     */
-    public void setDisplayMode(String displayMode) {
-        mDisplayMode = displayMode;
-    }
-
-    /**
-     * 获取应用显示方式
-     */
-    public String getDisplayMode() {
-        return mDisplayMode;
     }
 
     /**

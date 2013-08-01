@@ -35,6 +35,7 @@ import org.w3c.dom.NodeList;
 
 import com.polyvi.xface.extension.XExtensionEntry;
 import com.polyvi.xface.util.XLog;
+import com.polyvi.xface.util.XXmlUtils;
 import com.polyvi.xface.xmlParser.XXmlParser;
 
 public class XSysConfigParser {
@@ -43,7 +44,6 @@ public class XSysConfigParser {
 
     protected static final String TAG_APP_PACKAGE = "app_package";
     protected static final String TAG_EXTENSION = "extension";
-    protected static final String TAG_PREFERENCE = "preference";
     protected static final String TAG_PLUGIN = "plugin";
 
     protected static final String ATTR_NAME = "name";
@@ -119,17 +119,17 @@ public class XSysConfigParser {
         sysConfigInfo.setPreinstallPackages(parsePreInstallPackagesTag());
         sysConfigInfo.setStartAppId(parseStartAppId());
         sysConfigInfo.setSysExtensions(parseExtensionTag());
-        sysConfigInfo.setLogLevel(parsePrefValue(ATTR_LOG_LEVEL));
-        sysConfigInfo.setFullscreen(parsePrefValue(ATTR_FULLSCREEN));
-        sysConfigInfo.setSplashDelay(parsePrefValue(ATTR_SPLASH_DELAY));
-        sysConfigInfo.setShowSplash(parsePrefValue(ATTR_SHOW_SPLASH));
-        sysConfigInfo.setAutoHideSplash(parsePrefValue(ATTR_AUTO_HIDE_SPLASH));
-        sysConfigInfo.setWorkDir(parsePrefValue(ATTR_WORK_DIR));
-        sysConfigInfo.setEngineVersion(parsePrefValue(ATTR_ENGINE_VERSION));
-        sysConfigInfo.setEngineBuild(parsePrefValue(ATTR_ENGINE_BUILD));
-        sysConfigInfo.setUpdateAddress(parsePrefValue(ATTR_UPDATE_ADDRESS));
-        sysConfigInfo.setUpdateCheck(parsePrefValue(ATTR_CHECK_UPDATE));
-        sysConfigInfo.setLoadUrlTimeout(parsePrefValue(ATTR_LOADURL_TIMEOUT));
+        sysConfigInfo.setLogLevel(XXmlUtils.parsePrefValue(mDoc, ATTR_LOG_LEVEL));
+        sysConfigInfo.setFullscreen(XXmlUtils.parsePrefValue(mDoc, ATTR_FULLSCREEN));
+        sysConfigInfo.setSplashDelay(XXmlUtils.parsePrefValue(mDoc, ATTR_SPLASH_DELAY));
+        sysConfigInfo.setShowSplash(XXmlUtils.parsePrefValue(mDoc, ATTR_SHOW_SPLASH));
+        sysConfigInfo.setAutoHideSplash(XXmlUtils.parsePrefValue(mDoc, ATTR_AUTO_HIDE_SPLASH));
+        sysConfigInfo.setWorkDir(XXmlUtils.parsePrefValue(mDoc, ATTR_WORK_DIR));
+        sysConfigInfo.setEngineVersion(XXmlUtils.parsePrefValue(mDoc, ATTR_ENGINE_VERSION));
+        sysConfigInfo.setEngineBuild(XXmlUtils.parsePrefValue(mDoc, ATTR_ENGINE_BUILD));
+        sysConfigInfo.setUpdateAddress(XXmlUtils.parsePrefValue(mDoc, ATTR_UPDATE_ADDRESS));
+        sysConfigInfo.setUpdateCheck(XXmlUtils.parsePrefValue(mDoc, ATTR_CHECK_UPDATE));
+        sysConfigInfo.setLoadUrlTimeout(XXmlUtils.parsePrefValue(mDoc, ATTR_LOADURL_TIMEOUT));
         sysConfigInfo.setPluginsConfig(parsePluginsConfig());
         sysConfigInfo.setPluginDesciptions(parsePluginDesciptions());
         return sysConfigInfo;
@@ -208,27 +208,6 @@ public class XSysConfigParser {
             }
         }
         return extensions;
-    }
-
-    /**
-     * 解析preference标签中相应name的value值
-     * <preference name="LogLevel" value="DEBUG" />
-     * @param attrName
-     * @return
-     */
-    private String parsePrefValue(String attrName) {
-        NodeList nodes = mDoc.getElementsByTagName(TAG_PREFERENCE);
-        int len = (null == nodes ? 0 : nodes.getLength());
-        for (int i = 0; i < len; i++) {
-            Node textChild = nodes.item(i);
-            if(null != textChild) {
-                String parseName = ((Element) textChild).getAttribute(ATTR_NAME);
-                if(parseName.equals(attrName)) {
-                    return ((Element) textChild).getAttribute(ATTR_VALUE);
-                }
-            }
-        }
-        return null;
     }
 
     /**

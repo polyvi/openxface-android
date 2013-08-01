@@ -84,14 +84,15 @@ public class XPersistentAppList extends XAppList {
         for (int index = 0; index < appId.length; index++) {
             try {
                 XAppInfo appInfo = readAppInfo(appId, index);
+                if (null == appInfo) {
+                    continue;
+                }
                 String appSourceDir = readSourceDir(appId[index]);
                 if (null != appSourceDir) {
                     appInfo.setSrcRoot(appSourceDir);
                 }
-                if (null != appInfo) {
-                    XIApplication app = mCreator.create(appInfo);
-                    add(app);
-                }
+                XIApplication app = mCreator.create(appInfo);
+                add(app);
             } catch (FileNotFoundException e) {
                 XLog.w(CLASS_NAME, "Can't locate app.xml of app: " + appId[index]);
                 e.printStackTrace();

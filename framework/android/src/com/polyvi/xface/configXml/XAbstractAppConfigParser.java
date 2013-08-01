@@ -22,7 +22,6 @@
 package com.polyvi.xface.configXml;
 
 import java.io.InputStream;
-import java.util.HashSet;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -39,14 +38,14 @@ public abstract class XAbstractAppConfigParser {
     protected Document mDoc;
     protected static final String TAG_CONFIG_ROOT = "config";
     protected static final String TAG_APPLICATIONS = "applications";
-    protected static final String TAG_EXTENSIONS = "extensions";
     protected static final String TAG_ACCESS = "access";
     protected static final String TAG_ORIGIN = "origin";
     protected static final String TAG_SUBDOMAINS = "subdomains";
+    protected static final String TAG_WIDGET = "widget";
+    protected static final String TAG_CONTENT = "content";
     protected static final String TAG_APP = "app";
     protected static final String TAG_NAME = "name";
     protected static final String TAG_TYPE = "type";
-    protected static final String TAG_EXTENSION = "extension";
     protected static final String TAG_DESCRIPTION = "description";
     protected static final String TAG_ICON = "icon";
     protected static final String TAG_ENTRY = "entry";
@@ -75,6 +74,7 @@ public abstract class XAbstractAppConfigParser {
     protected static final String ATTR_SCHEMA = "schema";
     protected static final String ATTR_TYPE = "type";
     protected static final String ATTR_APP_SOURCE_DIR = "source_dir";
+    protected static final String ATTR_MODE = "mode";
 
     public XAbstractAppConfigParser() {
           mAppInfo = new XAppInfo();
@@ -85,28 +85,6 @@ public abstract class XAbstractAppConfigParser {
     public void setInput(InputStream is)
     {
 
-    }
-
-
-    /**
-     * 解析<extensions>标签
-     *
-     * @throws XTagNotFoundException
-     */
-    protected void parseExtensionsTag() throws XTagNotFoundException {
-        Element extensionsElement = getElementByTagName(mDoc,
-                TAG_EXTENSIONS);
-        NodeList extensionList = getNodeListByTagName(extensionsElement,
-                TAG_EXTENSION);
-        int len = extensionList.getLength();
-        if (0 != len) {
-            HashSet<String> extensions = new HashSet<String>();
-            for (int i = 0; i < len; i++) {
-                extensions.add(((Element) extensionList.item(i))
-                        .getAttribute(ATTR_NAME));
-            }
-            mAppInfo.setAllowedExtensions(extensions);
-        }
     }
 
     /**

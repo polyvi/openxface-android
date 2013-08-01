@@ -86,8 +86,6 @@ public class XRuntime implements XISystemEventReceiver {
      */
     public boolean initStartApp(XAppInfo appInfo) {
         if (null == appInfo) {
-            mSystemContext
-                    .toast("config.xml: app_package id not match to app id in app.xml.");
             return false;
         }
         XIApplication app = mCreator.create(appInfo);

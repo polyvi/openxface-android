@@ -54,6 +54,8 @@ public class XStrings {
 
     public static String ECOPAY_INSTALL_OPTIONS = "ecopay_install_options";
 
+    public static String APP_CONFIG_ERROR = "app_config_error";
+
     private static String TAG_RESOURCES = "resources";
 
     private static String XML_NAME = "xface_string";

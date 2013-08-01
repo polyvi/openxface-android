@@ -23,12 +23,10 @@ package com.polyvi.xface.configXml;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
-import org.w3c.dom.NodeList;
 
 import com.polyvi.xface.app.XAppInfo;
-import com.polyvi.xface.app.XApplicationCreator;
-import com.polyvi.xface.app.XWhiteList;
 import com.polyvi.xface.util.XLog;
+import com.polyvi.xface.util.XStringUtils;
 
 /**
  * 用来解析schema为1.0的应用配置文件
@@ -36,7 +34,6 @@ import com.polyvi.xface.util.XLog;
 public class XAppConfigParserSchema1_0 extends XAbstractAppConfigParser {
     private static final String CLASS_NAME = XAppConfigParserSchema1_0.class
             .getSimpleName();
-
 
     public XAppConfigParserSchema1_0(Document doc) {
         super();
@@ -50,125 +47,139 @@ public class XAppConfigParserSchema1_0 extends XAbstractAppConfigParser {
      */
     public XAppInfo parseConfig() {
         try {
-            parseAppTag();
-            parseDescriptionTag();
-            parseDistributionTag();
-            parseSecurityTag();
-            // TODO:临时代码实现,这个地方不应该就为空就抛出异常
-            if (!XApplicationCreator.NATIVE_APP_TYPE.equals(mAppInfo.getType())) {
-                parseExtensionsTag();
-            }
+            parseRequiredTag();
+            parseOptionalTag();
             return mAppInfo;
         } catch (XTagNotFoundException e) {
             XLog.e(CLASS_NAME, e.getMessage());
-            e.printStackTrace();
             return null;
         }
     }
 
     /**
-     * 解析app.xml中的<app>标签
+     * 解析app.xml中AppInfo必需的标签
      *
      * @throws XTagNotFoundException
      */
-    protected void parseAppTag() throws XTagNotFoundException {
-        Element appElement = getElementByTagName(mDoc,
-                TAG_APP);
-        mAppInfo.setAppId(appElement
-                .getAttribute(ATTR_ID));
-    }
-
-    /**
-     * 解析app.xml中的<description>标签
-     *
-     * @throws XTagNotFoundException
-     */
-    protected void parseDescriptionTag() throws XTagNotFoundException {
-        /** 解析description标签 */
-        Element descriptionElement = getElementByTagName(mDoc,
-                TAG_DESCRIPTION);
-        mAppInfo.setName(getElementValueByNode(descriptionElement,
-                TAG_NAME));
-        mAppInfo.setType(getElementValueByNode(descriptionElement,
-                TAG_TYPE));
-        mAppInfo.setIconBackgroudColor(getElementValueByAttribute(descriptionElement,
-                TAG_ICON,
-                ATTR_BACKGROUND_COLOR));
-        mAppInfo.setIcon(getElementValueByAttribute(descriptionElement,
-                TAG_ICON,
-                ATTR_SRC));
+    private void parseRequiredTag() throws XTagNotFoundException {
+        Element appElement = getElementByTagName(mDoc, TAG_APP);
+        String id = appElement.getAttribute(ATTR_ID);
+        if (XStringUtils.isEmptyString(id)) {
+            throw new XTagNotFoundException(ATTR_ID);
+        }
+        mAppInfo.setAppId(id);
+        Element descriptionElement = getElementByTagName(mDoc, TAG_DESCRIPTION);
         mAppInfo.setEntry(getElementValueByAttribute(descriptionElement,
-                TAG_ENTRY,
-                ATTR_SRC));
-        mAppInfo.setVersion(getElementValueByNode(descriptionElement,
-                TAG_VERSION));
-        if (!XApplicationCreator.NATIVE_APP_TYPE.equals(mAppInfo.getType())) {
-            Element displayElement = getElementByTagName(descriptionElement,
-                    TAG_DISPLAY);
-            mAppInfo.setDisplayMode(getElementValueByAttribute(
-                    descriptionElement, TAG_DISPLAY,
-                    ATTR_TYPE));
-            mAppInfo.setWidth(Integer.valueOf(getElementValueByNode(
-                    displayElement, TAG_WIDTH)));
-            mAppInfo.setHeight(Integer.valueOf(getElementValueByNode(
-                    displayElement, TAG_HEIGHT)));
-            mAppInfo.setEngineType(getElementValueByNode(descriptionElement,
-                    TAG_RUNTIME));
-            try {
-                mAppInfo.setRunModeConfig(getElementValueByAttribute(
-                        descriptionElement,
-                        TAG_APP_RUNNING_MODE,
-                        ATTR_VALUE));
-            } catch (XTagNotFoundException e) {
-                mAppInfo.setRunModeConfig(null);
-            }
-        }
+                TAG_ENTRY, ATTR_SRC));
     }
 
     /**
-     * 解析app.xml中的<distribution>标签
-     *
-     * @throws XTagNotFoundException
+     * 解析app.xml中的可选的标签
      */
-    protected void parseDistributionTag() throws XTagNotFoundException {
-        Element distributionElement = getElementByTagName(mDoc,
-                TAG_DISTRIBUTION);
-        if (!XApplicationCreator.NATIVE_APP_TYPE.equals(mAppInfo.getType())) {
-            Element packageElement = getElementByTagName(distributionElement,
-                    TAG_PACKAGE);
-            mAppInfo.setEncrypted(Boolean.valueOf(getElementValueByNode(
-                    packageElement, TAG_ENCRYPT)));
-        }
-        Element channelElement = getElementByTagName(distributionElement,
-                TAG_CHANNEL);
-        mAppInfo.setChannelId(getElementValueByAttribute(distributionElement,
-                TAG_CHANNEL,
-                ATTR_ID));
-        mAppInfo.setChannelName(getElementValueByNode(channelElement,
-                TAG_NAME));
-    }
-
-    /**
-     * 解析<access>标签
-     *
-     * @throws XTagNotFoundException
-     */
-    protected void parseSecurityTag() {
+    private void parseOptionalTag() {
         try {
-             Element appElement = getElementByTagName(mDoc,
-                    TAG_APP);
-             NodeList accessList = getNodeListByTagName(appElement,
-                    TAG_ACCESS);
-             int len = accessList.getLength();
-             XWhiteList appWhiteList = new XWhiteList();
-             mAppInfo.setWhiteList(appWhiteList);
-             for (int i = 0; i < len; i++) {
-                 Element  item = (Element)accessList.item(i);
-                 appWhiteList.addWhiteListEntry(item.getAttribute(TAG_ORIGIN),
-                         item.getAttribute(TAG_SUBDOMAINS));
-             }
+            Element descriptionElement = getElementByTagName(mDoc,
+                    TAG_DESCRIPTION);
+            parseName(descriptionElement);
+            parseType(descriptionElement);
+            parseIconBackgroundColor(descriptionElement);
+            parseIconSrc(descriptionElement);
+            parseVersion(descriptionElement);
+            parseMode(descriptionElement);
         } catch (XTagNotFoundException e) {
-            XLog.w(CLASS_NAME, "access tag is absent", e);
+            XLog.w(CLASS_NAME, "TAG: " + TAG_DESCRIPTION + " Not Found!");
+        }
+    }
+
+    /**
+     * 解析appName
+     *
+     * @param descriptionElement
+     */
+    private void parseName(Element descriptionElement) {
+        try {
+            mAppInfo.setName(getElementValueByNode(descriptionElement, TAG_NAME));
+        } catch (XTagNotFoundException e) {
+            XLog.w(CLASS_NAME, "TAG: " + TAG_NAME + " Not Config!");
+        }
+    }
+
+    /**
+     * 解析应用类型
+     *
+     * @param descriptionElement
+     */
+    private void parseType(Element descriptionElement) {
+        try {
+            mAppInfo.setType(getElementValueByNode(descriptionElement, TAG_TYPE));
+        } catch (XTagNotFoundException e) {
+            XLog.w(CLASS_NAME, "TAG: " + TAG_TYPE + " Not Config!");
+        }
+    }
+
+    /**
+     * 解析icon背景颜色
+     *
+     * @param descriptionElement
+     */
+    private void parseIconBackgroundColor(Element descriptionElement) {
+        try {
+            mAppInfo.setIconBackgroudColor(getElementValueByAttribute(
+                    descriptionElement, TAG_ICON, ATTR_BACKGROUND_COLOR));
+        } catch (XTagNotFoundException e) {
+            XLog.w(CLASS_NAME, "TAG: " + TAG_ICON + " Not Config!");
+        }
+    }
+
+    /**
+     * 解析icon源地址
+     *
+     * @param descriptionElement
+     */
+    private void parseIconSrc(Element descriptionElement) {
+        try {
+            String iconSrc = getElementValueByAttribute(descriptionElement,
+                    TAG_ICON, ATTR_SRC);
+            if (XStringUtils.isEmptyString(iconSrc)) {
+                XLog.w(CLASS_NAME, "Attribute: " + ATTR_SRC + " Not Config!");
+                return;
+            }
+            mAppInfo.setIcon(iconSrc);
+        } catch (XTagNotFoundException e) {
+            XLog.w(CLASS_NAME, "TAG: " + TAG_ICON + " Not Config!");
+        }
+    }
+
+    /**
+     * 解析应用版本号
+     *
+     * @param descriptionElement
+     */
+    private void parseVersion(Element descriptionElement) {
+        try {
+            mAppInfo.setVersion(getElementValueByNode(descriptionElement,
+                    TAG_VERSION));
+        } catch (XTagNotFoundException e) {
+            XLog.w(CLASS_NAME, "TAG: " + TAG_VERSION + " Not Config!");
+        }
+    }
+
+    /**
+     * 解析应用运行模式
+     *
+     * @param descriptionElement
+     */
+    private void parseMode(Element descriptionElement) {
+        try {
+            String runMode = getElementValueByAttribute(descriptionElement,
+                    TAG_APP_RUNNING_MODE, ATTR_VALUE);
+            if (XStringUtils.isEmptyString(runMode)) {
+                XLog.w(CLASS_NAME, "Attribute: " + ATTR_VALUE + " Not Config!");
+                return;
+            }
+            mAppInfo.setRunModeConfig(runMode);
+        } catch (XTagNotFoundException e) {
+            XLog.w(CLASS_NAME, "TAG: " + TAG_APP_RUNNING_MODE + " Not Config!");
         }
     }
 }

@@ -47,6 +47,13 @@ public class XBasedAppInfo {
      */
     private String mType;
 
+    public XBasedAppInfo() {
+        mName = "";
+        mVersion = "";
+        mIcon = "";
+        mType = "xapp";
+    }
+
     /**
      * 设置应用id
      *
