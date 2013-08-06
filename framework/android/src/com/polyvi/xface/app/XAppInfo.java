@@ -59,6 +59,7 @@ public class XAppInfo extends XBasedAppInfo {
         mAppRunningMode = "local";
         mChannelId = "";
         mChannelName = "";
+        mWhiteList = new XWhiteList();
     }
 
     /** 获取应用宽度 */
