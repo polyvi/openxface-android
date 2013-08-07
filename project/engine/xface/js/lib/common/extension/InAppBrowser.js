@@ -103,7 +103,7 @@
         }
     }
     /**
-     * 打开一个网页，通过window.open调用该方法
+     * 打开一个网页，通过window.open调用该方法（Android, iOS, WP8）
      @example
           function openInAppBrowser() {
           var browser = window.open('http://baidu.com', 'random_string');
@@ -138,7 +138,7 @@
                              "\_self":    表示在当前xface页面打开<br/>
                              "\_system":  表示在系统浏览器打开<br/>
                              "\_blank"或其他未定义的值: 表示在内置的浏览器打开，也就是在新的窗口打开<br/>
-     * @param {String} [strWindowFeatures=""] 特性列表。不能包含空格，格式形如"location=yes,foo=no,bar=yes"。目前只支持location，表示显示地址栏与否。
+     * @param {String} [strWindowFeatures=""] 特性列表。不能包含空格，格式形如"location=yes,foo=no,bar=yes"。目前只支持location，表示显示地址栏与否。(WP8不支持location)
      * @return 返回InAppBrowser实例对象
      * @platform Android, iOS, WP8
      * @since 3.0.0
@@ -167,7 +167,7 @@
     }
 
     /**
-     * 为InAppBrowser增加一个事件监听器,注意只有在内置的浏览器打开，事件监听器才有效
+     * 为InAppBrowser增加一个事件监听器,注意只有在内置的浏览器打开，事件监听器才有效（Android, iOS, WP8）
      @example
           见loadstart、loadstop、exit 事件的示例
      * @method addEventListener
@@ -188,7 +188,7 @@
     }
 
     /**
-     * 去除InAppBrowser一个事件监听器
+     * 去除InAppBrowser一个事件监听器（Android, iOS, WP8）
      @example
           见loadstart、loadstop、exit 事件的示例
      * @method removeEventListener
@@ -215,7 +215,7 @@
     }
 
     /**
-     * 注入一段js代码并执行
+     * 注入一段js代码并执行（Android, iOS）
      * @example
             var browser = null;
             //给页面注入JS代码
@@ -271,7 +271,7 @@
     }
 
     /**
-     * 注入CSS代码
+     * 注入CSS代码（Android, iOS）
      * @example
             var browser = null;
             //给页面注入CSS代码
