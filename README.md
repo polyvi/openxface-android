@@ -2,6 +2,8 @@
 
 This is Android port for openxface.
 
+openxface was inspired by Apache Cordova project and also by our legacy xFace. It offers a flexible hybrid app runtime, app management system, and rich extensions. We're truly appreciated the great work of Apache Cordova.
+
 ##Get started with the source
 ###Requirement
 + Android runtime enviroment (ADT 21.0.X)
@@ -50,6 +52,9 @@ An overview of the main directories:
 
 ##Further Reading
 + Please visit [openxface](http://polyvi.github.io/openxface/)
+
+##License
+All source related to Apache Cordova is still following Apache License, Version 2.0, while all others is distributed under the terms of the GNU General Public License.
 
 #openxface
 这里是openxface的Android分支
