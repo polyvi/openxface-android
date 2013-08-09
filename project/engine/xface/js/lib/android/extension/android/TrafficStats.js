@@ -20,7 +20,6 @@
  under the License.
 */
 
-﻿
  /**
  * TrafficStats模块提供流量统计功能
  * @module trafficStats
