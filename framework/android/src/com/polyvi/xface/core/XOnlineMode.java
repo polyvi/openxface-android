@@ -76,7 +76,7 @@ public class XOnlineMode extends XAppRunningMode implements XAppCheckListener {
        String entry = app.getAppInfo().getEntry();
        if (entry.contains(XConstant.HTTP_SCHEME) ||
                entry.contains(XConstant.HTTPS_SCHEME)) {
-          return entry;
+          return addPlatformTag(entry);
        }
        app.getSystemContext().toast("app.xml: tag entry config error");
        XLog.e(CLASS_NAME, "app.xml: tag entry config error");
@@ -330,5 +330,19 @@ public class XOnlineMode extends XAppRunningMode implements XAppCheckListener {
         appUrl = appUrl.replaceAll(":", "_");
         return appUrl.substring(0, appUrl.indexOf("/"))
                 + "." + LOCALSTORAGE;
+    }
+
+    /**
+     * 给Url加上平台标示符
+     * example:
+     * http://polyvi.com会变成http://polyvi.com?platform=android
+     * http://polyvi.com?data=test会变成http://polyvi.com?data=test&platform=android
+     */
+    private String addPlatformTag(String url) {
+        if(null == url) {
+            return url;
+        }
+        String append = url.indexOf("?") > 0 ? "&platform=android" : "?platform=android";
+        return url + append;
     }
 }
