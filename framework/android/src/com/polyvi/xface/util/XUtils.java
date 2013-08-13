@@ -34,8 +34,6 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.Random;
 
-
-
 import android.content.Context;
 import android.content.res.Configuration;
 import android.graphics.Bitmap;
@@ -190,6 +188,29 @@ public class XUtils {
      * @return 解析得到的Bitmap，如果解析不成功会返回null
      */
     public static Bitmap decodeBitmap(String imagePath) {
+        Bitmap bitmap = null;
+        try {
+            File file = new File(imagePath);
+            FileInputStream fs = new FileInputStream(file);
+            if (fs != null) {
+                bitmap = decodeBitmap(fs);
+            }
+        } catch (FileNotFoundException e) {
+            XLog.e(CLASS_NAME, e.getMessage());
+        } catch (OutOfMemoryError e) {
+            XLog.e(CLASS_NAME, e.getMessage());
+        }
+        return bitmap;
+    }
+
+    /**
+     * 解析指定流的图片成bitmap格式
+     * 注意：解析没有用decodeFile/decodeStream是因为这两个函数解析大图片的时候
+     * 会导致ava.lang.OutOfMemoryError: bitmap size exceeds VM budget
+     * @param is：图片输入流
+     * @return 解析得到的Bitmap，如果解析不成功会返回null
+     */
+    public static Bitmap decodeBitmap(InputStream is) {
         BitmapFactory.Options options = new BitmapFactory.Options();
         /**设置禁止抖动图片*/
         options.inDither = false;
@@ -199,24 +220,17 @@ public class XUtils {
         options.inInputShareable = true;
         /**解析图片用到的容量，本处16k*/
         options.inTempStorage = new byte[16 * 1024];
-        File file = new File(imagePath);
-        FileInputStream fs = null;
         Bitmap bitmap = null;
         try {
-            fs = new FileInputStream(file);
-            if (fs != null) {
-                bitmap = BitmapFactory.decodeFileDescriptor(fs.getFD(), null, options);
+            if (is != null) {
+                bitmap = BitmapFactory.decodeStream(is, null, options);
             }
-        } catch (FileNotFoundException e) {
-            XLog.e(CLASS_NAME, e.getMessage());
-        } catch (IOException e) {
-            XLog.e(CLASS_NAME, e.getMessage());
         } catch (OutOfMemoryError e) {
             XLog.e(CLASS_NAME, e.getMessage());
         } finally {
-            if (fs != null) {
+            if (is != null) {
                 try {
-                    fs.close();
+                    is.close();
                 } catch (IOException e) {
                     XLog.e(CLASS_NAME, e.getMessage());
                 }

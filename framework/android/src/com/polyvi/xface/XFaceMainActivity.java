@@ -22,6 +22,7 @@
 package com.polyvi.xface;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.HashMap;
 
 import android.app.Activity;
@@ -471,11 +472,11 @@ public class XFaceMainActivity extends Activity implements XISystemContext{
         mAppSplashView.setLayoutParams(layoutParams);
         mAppSplashImage = XUtils.decodeBitmap(imagePath);
         if (mAppSplashImage == null) {
-            mAppSplashView.setBackgroundResource(R.drawable.xface_logo);
-        } else {
-            mAppSplashView.setBackgroundDrawable(new BitmapDrawable(
-                    mAppSplashImage));
+            /**如果前面获取到的图片为空，则默认采用xface_logo*/
+            InputStream is = getActivity().getResources().openRawResource(R.drawable.xface_logo);
+            mAppSplashImage = XUtils.decodeBitmap(is);
         }
+        mAppSplashView.setBackgroundDrawable(new BitmapDrawable( mAppSplashImage));
         mContentView.addView(mAppSplashView);
     }
 
