@@ -137,9 +137,9 @@ public class XWebViewClient extends WebViewClientClassicExt {
             // TODO:以后参照phonegap管理url和白名单处理。
             else if (url.startsWith(XConstant.FILE_SCHEME)
                     || url.startsWith("data:")
-                    || url.startsWith(XConstant.HTTP_SCHEME)
-                    || url.startsWith(XConstant.HTTPS_SCHEME)
-                    || (null != whiteList && whiteList.isUrlWhiteListed(url))) {
+                    || ( (url.startsWith(XConstant.HTTP_SCHEME)
+                            || url.startsWith(XConstant.HTTPS_SCHEME))
+                            && (null != whiteList && whiteList.isUrlWhiteListed(url))) ) {
                 /**
                  * 由于三星I9003如果页面不存在会崩溃，所以这里对url进行预处理 如果url不存在给出错误提示
                  */
@@ -233,7 +233,7 @@ public class XWebViewClient extends WebViewClientClassicExt {
 
     /**
      * 对url进行处理，并返回处理结果。
-     * 
+     *
      * @param url
      *            要处理的url
      * @param return true:url已经被处理，false：未被处理。
