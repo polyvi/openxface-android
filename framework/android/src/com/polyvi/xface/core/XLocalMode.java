@@ -29,6 +29,7 @@ import com.polyvi.xface.app.XApplication;
 import com.polyvi.xface.util.XConstant;
 import com.polyvi.xface.util.XFileUtils;
 import com.polyvi.xface.util.XLog;
+import com.polyvi.xface.util.XStrings;
 
 /**
  * 本地模式，应用的所有文件都在本地目录 指应用放到本地磁盘 离散的形式
@@ -74,10 +75,12 @@ public class XLocalMode extends XAppRunningMode implements XAppCheckListener {
 
     @Override
     public void onCheckSuccess(XApplication app, XISystemContext ctx) {
-        String appUrl= getAppUrl(app);
-        if( XFileUtils.fileExists(ctx.getContext(), appUrl) ) {
+        String appUrl = getAppUrl(app);
+        if (XFileUtils.fileExists(ctx.getContext(), appUrl)) {
             app.loadAppIntoView(appUrl);
         } else {
+            app.getSystemContext().toast(
+                    XStrings.getInstance().getString(XStrings.ENTRY_NOT_FOUND));
             app.loadErrorPage();
         }
     }
