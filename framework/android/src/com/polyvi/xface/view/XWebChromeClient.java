@@ -25,13 +25,9 @@ package com.polyvi.xface.view;
 import org.json.JSONArray;
 import org.json.JSONException;
 
-import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
-import android.media.MediaPlayer;
-import android.media.MediaPlayer.OnCompletionListener;
-import android.media.MediaPlayer.OnErrorListener;
 import android.util.Pair;
 import android.view.KeyEvent;
 import android.view.View;
@@ -42,8 +38,6 @@ import android.webkit.WebChromeClient;
 import android.webkit.WebStorage.QuotaUpdater;
 import android.webkit.WebView;
 import android.widget.EditText;
-import android.widget.FrameLayout;
-import android.widget.VideoView;
 
 import com.polyvi.xface.app.XWhiteList;
 import com.polyvi.xface.event.XEvent;
@@ -54,10 +48,8 @@ import com.polyvi.xface.util.XLog;
 
 /**
  * 主要负责实现webview提供的回调函数
- *
  */
-public class XWebChromeClient extends WebChromeClient implements
-        OnCompletionListener, OnErrorListener {
+public class XWebChromeClient extends WebChromeClient {
 
     private static final String TOKEN_EXECUTE_EXTENSION = "_xFace_jsscript:";
     /** < 执行本地扩展标志串，由javascript传进来 */
@@ -106,8 +98,6 @@ public class XWebChromeClient extends WebChromeClient implements
     /** < activity上下文 */
 
     private XAppWebView mAppWebView;
-    private VideoView mCustomVideoView = null;
-    private CustomViewCallback mCustomViewCallback = null;
 
     /**
      * 在回调函数中设置离线应用最大缓存限制
@@ -250,10 +240,12 @@ public class XWebChromeClient extends WebChromeClient implements
     @Override
     public boolean onJsPrompt(WebView view, String url, String message,
             String defaultValue, JsPromptResult result) {
-        /**安全检查确保请求合法*/
+        /** 安全检查确保请求合法 */
         boolean reqOk = false;
-        XWhiteList whiteList = mAppWebView.getOwnerApp().getAppInfo().getWhiteList();
-        if (url.startsWith("file://") || (null != whiteList && whiteList.isUrlWhiteListed(url))) {
+        XWhiteList whiteList = mAppWebView.getOwnerApp().getAppInfo()
+                .getWhiteList();
+        if (url.startsWith("file://")
+                || (null != whiteList && whiteList.isUrlWhiteListed(url))) {
             reqOk = true;
         }
         // TODO check 安全性 prompt是否来自于发起该url的page
@@ -265,10 +257,11 @@ public class XWebChromeClient extends WebChromeClient implements
         }
         switch (command) {
         case COMMAND_EXECUTE_EXTENSION: {
-            if(reqOk) {
+            if (reqOk) {
                 try {
                     final JSONArray array = new JSONArray(
-                            defaultValue.substring(TOKEN_EXECUTE_EXTENSION.length()));
+                            defaultValue.substring(TOKEN_EXECUTE_EXTENSION
+                                    .length()));
                     String extName = array.getString(0);
                     final String action = array.getString(1);
                     final String callbackId = array.getString(2);
@@ -339,7 +332,8 @@ public class XWebChromeClient extends WebChromeClient implements
                 XAppWebView appView = ((XAppWebView) view);
                 Pair<XAppWebView, String> appMessage = new Pair<XAppWebView, String>(
                         appView, args.getString(0));
-                XEvent evt = XEvent.createEvent(XEventType.XAPP_MESSAGE, appMessage);
+                XEvent evt = XEvent.createEvent(XEventType.XAPP_MESSAGE,
+                        appMessage);
                 XSystemEventCenter.getInstance().sendEventSync(evt);
             } catch (JSONException e) {
                 XLog.d(CLASS_NAME, e.getMessage());
@@ -348,7 +342,7 @@ public class XWebChromeClient extends WebChromeClient implements
         }
             break;
         case COMMAND_GAP_BRIDGE_MODE:
-            if(reqOk) {
+            if (reqOk) {
                 int value = Integer.parseInt(message);
                 mAppWebView.getOwnerApp().getJSNativeBridge()
                         .setNativeToJsBridgeMode(value);
@@ -356,7 +350,7 @@ public class XWebChromeClient extends WebChromeClient implements
             }
             break;
         case COMMAND_GAP_POLL:
-            if(reqOk) {
+            if (reqOk) {
                 String r = mAppWebView.getOwnerApp().getJSNativeBridge()
                         .retrieveJsMessages();
                 result.confirm(r == null ? "" : r);
@@ -503,45 +497,12 @@ public class XWebChromeClient extends WebChromeClient implements
      */
     public void onShowCustomView(View view, CustomViewCallback callback) {
         // CustomViewCallback 是在 WebChromeClient 中定义的，此回调由外部传入
-        // TODO: 如果用户在播放过程中，点击了返回键，应该进行 onCompletion 相同操作：释放资源并隐藏播放 video 的 view
-        // 这些操作应该放在 XRuntime 中由 handleKeyUp 函数来处理。
-        super.onShowCustomView(view, callback);
-        if (view instanceof FrameLayout) {
-            FrameLayout frame = (FrameLayout) view;
-            this.mCustomViewCallback = callback;
-            if (frame.getFocusedChild() instanceof VideoView) {
-                mCustomVideoView = (VideoView) frame.getFocusedChild();
-                frame.setVisibility(View.VISIBLE);
-
-                FrameLayout.LayoutParams layoutParameters = new FrameLayout.LayoutParams(
-                        FrameLayout.LayoutParams.FILL_PARENT,
-                        FrameLayout.LayoutParams.FILL_PARENT);
-
-                ((Activity) mCtx).addContentView(frame, layoutParameters);
-
-                mCustomVideoView.setOnCompletionListener(this);
-                mCustomVideoView.setOnErrorListener(this);
-                mCustomVideoView.start();
-            }
-        }
+        mAppWebView.showCustomView(view, callback);
     }
 
     @Override
-    public boolean onError(MediaPlayer mp, int what, int extra) {
-        mp.reset();
-        XLog.e(CLASS_NAME, "Error : " + what + ", " + extra);
-
-        // 释放资源并隐藏播放 video 的 view
-        mCustomVideoView.stopPlayback();
-        mCustomViewCallback.onCustomViewHidden();
-        return false;
-    }
-
-    @Override
-    public void onCompletion(MediaPlayer mp) {
-        // 释放资源并隐藏播放 video 的 view
-        mCustomVideoView.stopPlayback();
-        mCustomViewCallback.onCustomViewHidden();
+    public void onHideCustomView() {
+        mAppWebView.hideCustomView();
     }
 
 }

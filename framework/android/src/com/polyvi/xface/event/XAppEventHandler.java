@@ -10,7 +10,7 @@
  "License"); you may not use this file except in compliance
  with the License. You may obtain a copy of the License at
 
-    http://www.apache.org/licenses/LICENSE-2.0
+ http://www.apache.org/licenses/LICENSE-2.0
 
  Unless required by applicable law or agreed to in writing,
  software distributed under the License is distributed on an
@@ -97,7 +97,7 @@ public class XAppEventHandler implements XISystemEventReceiver,
         String jsScript = "try{xFace.require('xFace/channel').onResume.fire();}catch(e){console.log('exception firing resume event from native');}";
         XAppWebView appView = (XAppWebView) mOwnerApp.getView();
         if (null != appView && appView.isJsInitFinished()) {
-          mOwnerApp.sendJavascript(jsScript);
+            mOwnerApp.sendJavascript(jsScript);
         }
         if (null != mExtensionManager) {
             mExtensionManager.onResume();
@@ -111,7 +111,7 @@ public class XAppEventHandler implements XISystemEventReceiver,
         String jsScript = "try{xFace.require('xFace/channel').onPause.fire();}catch(e){console.log('exception firing pause event from native');}";
         XAppWebView appView = (XAppWebView) mOwnerApp.getView();
         if (null != appView && appView.isJsInitFinished()) {
-           mOwnerApp.sendJavascript(jsScript);
+            mOwnerApp.sendJavascript(jsScript);
         }
         if (null != mExtensionManager) {
             mExtensionManager.onPause();
@@ -134,7 +134,7 @@ public class XAppEventHandler implements XISystemEventReceiver,
                 + msgs + "');}catch(e){console.log('msg rcv : ' + e);}";
         XAppWebView appView = (XAppWebView) mOwnerApp.getView();
         if (null != appView && appView.isJsInitFinished()) {
-            mOwnerApp.sendJavascript( jsScript );
+            mOwnerApp.sendJavascript(jsScript);
         }
     }
 
@@ -148,7 +148,7 @@ public class XAppEventHandler implements XISystemEventReceiver,
                 + callStatus + "');}catch(e){console.log('call rcv : ' + e);}";
         XAppWebView appView = (XAppWebView) mOwnerApp.getView();
         if (null != appView && appView.isJsInitFinished()) {
-           mOwnerApp.sendJavascript(jsScript);
+            mOwnerApp.sendJavascript(jsScript);
         }
     }
 
@@ -162,22 +162,27 @@ public class XAppEventHandler implements XISystemEventReceiver,
                 + message + "');}catch(e){console.log('call rcv : ' + e);}";
         XAppWebView appView = (XAppWebView) mOwnerApp.getView();
         if (null != appView && appView.isJsInitFinished()) {
-           mOwnerApp.sendJavascript(jsScript);
+            mOwnerApp.sendJavascript(jsScript);
         }
     }
 
     @Override
     public boolean onKeyUp(int keyCode, KeyEvent evt) {
         if (keyCode == KeyEvent.KEYCODE_BACK) {
-            if (mOwnerApp.isOverrideBackbutton()) {
-                String jsScript = "xFace.fireDocumentEvent('backbutton');";
-                mOwnerApp.sendJavascript(jsScript);
+            // 消除自定义视图(e.g. 播放视频视图)
+            if (mOwnerApp.getView().hideCustomView()) {
                 return false;
             } else {
-                WebView webView = (XAppWebView) mOwnerApp.getView();
-                if (webView.canGoBack()) {
-                    webView.goBack();
+                if (mOwnerApp.isOverrideBackbutton()) {
+                    String jsScript = "xFace.fireDocumentEvent('backbutton');";
+                    mOwnerApp.sendJavascript(jsScript);
                     return false;
+                } else {
+                    WebView webView = (XAppWebView) mOwnerApp.getView();
+                    if (webView.canGoBack()) {
+                        webView.goBack();
+                        return false;
+                    }
                 }
             }
         } else if (keyCode == KeyEvent.KEYCODE_MENU) {
@@ -221,7 +226,7 @@ public class XAppEventHandler implements XISystemEventReceiver,
         String script = "try{ xFace.require('xFace/channel').onNativeReady.fire('"
                 + params + "');}catch(e){_nativeReady = true;}";
         XLog.d(XRuntime.class.getSimpleName(), script);
-        //注意 由于需要在启动xapp的时候 传入参数 这段js只能在本地执行 故不能统一纳入XNativeToJsMessageQueue结构
+        // 注意 由于需要在启动xapp的时候 传入参数 这段js只能在本地执行 故不能统一纳入XNativeToJsMessageQueue结构
         view.loadUrl("javascript:" + script);
         script = "try{xFace.require('xFace/privateModule').initPrivateData(['"
                 + mOwnerApp.getAppId()
@@ -239,7 +244,8 @@ public class XAppEventHandler implements XISystemEventReceiver,
     }
 
     @Override
-    public void onOverrideBackbutton(XAppWebView view, boolean overrideBackbutton) {
+    public void onOverrideBackbutton(XAppWebView view,
+            boolean overrideBackbutton) {
         setOverrideBackbutton(view.getViewId(), overrideBackbutton);
     }
 

@@ -29,10 +29,14 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Build;
+import android.view.Gravity;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.ViewGroup;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
+import android.webkit.WebChromeClient.CustomViewCallback;
+import android.widget.FrameLayout;
 
 import com.polyvi.xface.app.XApplication;
 import com.polyvi.xface.app.XWhiteList;
@@ -68,6 +72,16 @@ public class XAppWebView extends WebView{
     private boolean mIsValid;
 
     private XApplication mOwnerApp;
+
+    /** 自定义HTML5视频视图 */
+    private View mCustomVideoView;
+    private CustomViewCallback mCustomViewCallback;
+    /** HTML5视频视图的布局 */
+    static final FrameLayout.LayoutParams COVER_SCREEN_GRAVITY_CENTER =
+            new FrameLayout.LayoutParams(
+            ViewGroup.LayoutParams.MATCH_PARENT,
+            ViewGroup.LayoutParams.MATCH_PARENT,
+            Gravity.CENTER);
 
     public XAppWebView(XISystemContext systemContext,
             XApplication app) {
@@ -302,4 +316,50 @@ public class XAppWebView extends WebView{
     public XIWebAppEventListener getAppEventListener() {
        return mWebAppEventListener;
     }
+
+    /**
+     * 显示HTML5视频自定义视图
+     *
+     * @param view
+     * @param callback
+     */
+    public void showCustomView(View view, CustomViewCallback callback) {
+        // 如果存在一个view，则立即消除新建的view
+        XLog.d(CLASS_NAME, "Showing Custom Video View");
+        if (mCustomVideoView != null) {
+            callback.onCustomViewHidden();
+            return;
+        }
+        mCustomVideoView = view;
+        mCustomViewCallback = callback;
+        // 在它的container中增加CustomVideoView
+        ViewGroup parent = (ViewGroup) this.getParent();
+        parent.addView(view, COVER_SCREEN_GRAVITY_CENTER);
+        // 隐藏CustomVideoView
+        this.setVisibility(View.GONE);
+        // 显示container
+        parent.setVisibility(View.VISIBLE);
+        parent.bringToFront();
+    }
+
+    /**
+     * 隐藏HTML5视频自定义视图
+     */
+    public boolean hideCustomView() {
+        XLog.d(CLASS_NAME, "Hidding Custom Video View");
+        if (mCustomVideoView == null) {
+            return false;
+        }
+        // 隐藏mCustomVideoView
+        mCustomVideoView.setVisibility(View.GONE);
+        // 从mCustomVideoView的container中删除它
+        ViewGroup parent = (ViewGroup) this.getParent();
+        parent.removeView(mCustomVideoView);
+        mCustomVideoView = null;
+        mCustomViewCallback.onCustomViewHidden();
+        // 显示content view.
+        this.setVisibility(View.VISIBLE);
+        return true;
+    }
+
 }
