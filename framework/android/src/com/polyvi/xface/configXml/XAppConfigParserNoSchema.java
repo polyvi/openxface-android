@@ -87,6 +87,7 @@ public class XAppConfigParserNoSchema extends XAbstractAppConfigParser {
         }
         parseType();
         parseMode();
+        parseEngine();
     }
 
     /**
@@ -154,4 +155,15 @@ public class XAppConfigParserNoSchema extends XAbstractAppConfigParser {
         XLog.w(CLASS_NAME, "TAG: " + ATTR_MODE + " Not Config!");
     }
 
+    /**
+     * 解析app运行的最低引擎版本要求
+     */
+    private void parseEngine() {
+        String engine = XXmlUtils.parsePrefValue(mDoc, ATTR_ENGINE);
+        if (null != engine) {
+            mAppInfo.setEngineRequired(engine);
+            return;
+        }
+        XLog.w(CLASS_NAME, "TAG: " + ATTR_ENGINE + " Not Config!");
+    }
 }

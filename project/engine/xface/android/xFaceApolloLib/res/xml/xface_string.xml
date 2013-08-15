@@ -12,4 +12,5 @@
     <string name="ecopay_install_options">确定,取消</string>
     <string name="app_config_error">app.xml文件配置错误</string>
     <string name="entry_not_found">未找到应用入口页面</string>
+    <string name="engin_version_not_match_warn">The engine is older than what the app requires, Please update the engine to avoid potential issues.</string>
 </resources>

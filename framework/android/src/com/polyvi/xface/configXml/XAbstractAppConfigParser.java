@@ -75,6 +75,7 @@ public abstract class XAbstractAppConfigParser {
     protected static final String ATTR_TYPE = "type";
     protected static final String ATTR_APP_SOURCE_DIR = "source_dir";
     protected static final String ATTR_MODE = "mode";
+    protected static final String ATTR_ENGINE = "engine";
 
     public XAbstractAppConfigParser() {
           mAppInfo = new XAppInfo();

@@ -58,6 +58,8 @@ public class XStrings {
 
     public static String ENTRY_NOT_FOUND = "entry_not_found";
 
+    public static String ENGINE_VERSION_NOT_MATCH_WARN = "engin_version_not_match_warn";
+
     private static String TAG_RESOURCES = "resources";
 
     private static String XML_NAME = "xface_string";

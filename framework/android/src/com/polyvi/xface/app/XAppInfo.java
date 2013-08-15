@@ -44,6 +44,10 @@ public class XAppInfo extends XBasedAppInfo {
 
     /** 定义此应用基于1.x or 3.x引擎运行，后面研究混合模式需要用到 */
     private String mEngineType;
+
+    /** 定义此应用最低引擎版本需求 */
+    private String mEngineRequired;
+
     /** 渠道ID */
     private String mChannelId;
     /** 渠道名称 */
@@ -130,6 +134,20 @@ public class XAppInfo extends XBasedAppInfo {
      */
     public void setEngineType(String engineType) {
         mEngineType = engineType;
+    }
+
+    /**
+     * 获得应用运行需要的最低引擎版本
+     */
+    public String getEngineRequired() {
+        return mEngineRequired;
+    }
+
+    /**
+     * 设置应用运行需要的最低引擎版本
+     */
+    public void setEngineRequired(String engineRequired) {
+        mEngineRequired = engineRequired;
     }
 
     /**

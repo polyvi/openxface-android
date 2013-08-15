@@ -26,6 +26,7 @@ import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.regex.Pattern;
 
 import android.content.Context;
 import android.view.View;
@@ -53,6 +54,7 @@ import com.polyvi.xface.util.XConstant;
 import com.polyvi.xface.util.XFileUtils;
 import com.polyvi.xface.util.XLog;
 import com.polyvi.xface.util.XStringUtils;
+import com.polyvi.xface.util.XStrings;
 import com.polyvi.xface.view.XAppWebView;
 
 /**
@@ -489,8 +491,8 @@ public class XApplication implements XIApplication, XIWebContext {
         createView();
         loadPlugin(mSysContext, mExtensionManager.getExtensionContext());
         mAppView.bindJSNativeBridge(getPlugins());
-
         mEvtHandler.registerSystemEventReceiver();
+        checkEngineVersionRequired(this);
         mRunningMode.loadApp(this, mSysContext.getSecurityPolily());
         return true;
     }
@@ -697,5 +699,49 @@ public class XApplication implements XIApplication, XIWebContext {
         sb.append("javascript:");
         sb.append(statement);
         this.getView().loadUrl(sb.toString());
+    }
+
+    /**
+     * 检查引擎版本是否符合应用最低引擎版本要求
+     *
+     *@param requiredVersion：应用需要的引擎版本
+     */
+    private void checkEngineVersionRequired(XApplication app) {
+        String requiredVersion = app.getAppInfo().getEngineRequired();
+        String engineVersion = XConfiguration.getInstance().readEngineVersion();
+        if(XStringUtils.isEmptyString(requiredVersion)) {
+            XLog.w(CLASS_NAME, "app required engine version is not configed");
+            return;
+        }
+        if(XStringUtils.isEmptyString(engineVersion)) {
+            XLog.w(CLASS_NAME, "engine version is not configed");
+            return;
+        }
+        if(isVersionValid(requiredVersion) &&  isVersionValid(engineVersion) &&
+                requiredVersion.compareToIgnoreCase(engineVersion) > 0) {
+            app.getSystemContext().toast(XStrings.getInstance().getString(
+                    XStrings.ENGINE_VERSION_NOT_MATCH_WARN));
+        }
+    }
+
+    /**
+     * 检查配置的版本号是否符合规则：
+     * 目前规则是：
+     * 一位数字开始
+     * 至少2段，至多3段。
+     * 每段必须数字
+     * 3.1.2 3.0.0
+     * @param version
+     * @return
+     */
+    private boolean isVersionValid(String version) {
+        if(XStringUtils.isEmptyString(version)) {
+            return false;
+        }
+        boolean isValid = Pattern.matches("^\\d{1}([.]\\d{1,2}){1,2}$", version);
+        if(!isValid) {
+            XLog.w(CLASS_NAME, "version not invalid");
+        }
+        return isValid;
     }
 }
