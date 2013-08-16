@@ -1,3 +1,24 @@
+
+/*
+ Copyright 2012-2013, Polyvi Inc. (http://polyvi.github.io/openxface)
+ This program is distributed under the terms of the GNU General Public License.
+
+ This file is part of xFace.
+
+ xFace is free software: you can redistribute it and/or modify
+ it under the terms of the GNU General Public License as published by
+ the Free Software Foundation, either version 3 of the License, or
+ (at your option) any later version.
+
+ xFace is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ GNU General Public License for more details.
+
+ You should have received a copy of the GNU General Public License
+ along with xFace.  If not, see <http://www.gnu.org/licenses/>.
+*/
+
 package com.polyvi.xface.util;
 
 import java.io.ByteArrayInputStream;
@@ -26,11 +47,11 @@ import com.polyvi.xface.core.XConfiguration;
 
 public class XFileUtils {
     private final static String CLASS_NAME = XFileUtils.class.getSimpleName();
-    //TODO:只加需要的权限，不覆盖已有权限
-    public final static String ALL_PERMISSION      = "777"; //文件权限：全部权限
-    public final static String EXECUTABLE_BY_OTHER = "701"; //文件权限：其他用户组可执行
-    public final static String READABLE_BY_OTHER   = "704"; //文件权限：其他用户组可读
-    public final static String READABLE_AND_EXECUTEBLE_BY_OTHER = "705";//文件权限:其他用户可读可执行
+    // TODO:只加需要的权限，不覆盖已有权限
+    public final static String ALL_PERMISSION = "777"; // 文件权限：全部权限
+    public final static String EXECUTABLE_BY_OTHER = "701"; // 文件权限：其他用户组可执行
+    public final static String READABLE_BY_OTHER = "704"; // 文件权限：其他用户组可读
+    public final static String READABLE_AND_EXECUTEBLE_BY_OTHER = "705";// 文件权限:其他用户可读可执行
 
     private static final int OCTAL_RADIX = 8; // 八进制基数
     private static String NO_MEDIA_FILE_NAME = ".nomedia";
@@ -38,18 +59,22 @@ public class XFileUtils {
 
     /**
      * 写文件
-     * @param filePath 要写入的文件的路径
-     * @param data     要写入的数据
-     * @return         开始写入数据的位置
+     *
+     * @param filePath
+     *            要写入的文件的路径
+     * @param data
+     *            要写入的数据
+     * @return 开始写入数据的位置
      */
-    public static long write(String fileName, String data, int position) throws FileNotFoundException, IOException {
+    public static long write(String fileName, String data, int position)
+            throws FileNotFoundException, IOException {
         boolean append = false;
         if (position > 0) {
             truncateFile(fileName, position);
             append = true;
         }
 
-        byte [] rawData = data.getBytes();
+        byte[] rawData = data.getBytes();
         ByteArrayInputStream in = new ByteArrayInputStream(rawData);
         FileOutputStream out = new FileOutputStream(fileName, append);
         byte buff[] = new byte[rawData.length];
@@ -63,11 +88,15 @@ public class XFileUtils {
 
     /**
      * 清除指定长度后的文件内容
-     * @param filePath 要清除的文件的路径
-     * @param size     清除size后的文件
-     * @return         剩下的文件长度
+     *
+     * @param filePath
+     *            要清除的文件的路径
+     * @param size
+     *            清除size后的文件
+     * @return 剩下的文件长度
      */
-    public static long truncateFile(String fileName, long size) throws FileNotFoundException, IOException {
+    public static long truncateFile(String fileName, long size)
+            throws FileNotFoundException, IOException {
         RandomAccessFile raf = new RandomAccessFile(fileName, "rw");
 
         if (raf.length() >= size) {
@@ -81,25 +110,29 @@ public class XFileUtils {
 
     /**
      * 获取指定文件类型
-     * @param fileName 文件的路径
-     * @return         文件的类型
+     *
+     * @param fileName
+     *            文件的路径
+     * @return 文件的类型
      */
     public static String getMimeType(String filename) {
         MimeTypeMap map = MimeTypeMap.getSingleton();
-        return map.getMimeTypeFromExtension(MimeTypeMap.getFileExtensionFromUrl(filename));
+        return map.getMimeTypeFromExtension(MimeTypeMap
+                .getFileExtensionFromUrl(filename));
     }
 
     /**
      * 创建文件和文件所在的目录
      *
-     * @param path  文件的绝对路径
+     * @param path
+     *            文件的绝对路径
      * @return 成功返回true,失败返回false
      */
     public static Boolean createFile(String path) {
         File file = new File(path);
         File parantFile = file.getParentFile();
         if (null != parantFile && !parantFile.exists() && !parantFile.mkdirs()) {
-                return false;
+            return false;
         }
 
         try {
@@ -114,45 +147,50 @@ public class XFileUtils {
     /**
      * 获得当前系统的sdcard路径
      *
-     * @return    如果sdcard可访问，则返回带当前系统的sdcard路径，否则返回null。
+     * @return 如果sdcard可访问，则返回带当前系统的sdcard路径，否则返回null。
      */
-     public static  String getSdcardPath() {
-         String path = null;
-         if(Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED)) {
-             path = Environment.getExternalStorageDirectory().getAbsolutePath();
-         } else {
-             path = XExternalStorageScanner.getExternalStoragePath();
-         }
-         return path;
-     }
+    public static String getSdcardPath() {
+        String path = null;
+        if (Environment.getExternalStorageState().equals(
+                Environment.MEDIA_MOUNTED)) {
+            path = Environment.getExternalStorageDirectory().getAbsolutePath();
+        } else {
+            path = XExternalStorageScanner.getExternalStoragePath();
+        }
+        return path;
+    }
 
-     /**
-      * 返回一个代表文件（夹）的JSON对象
-      * @param appWorkSpace 当前应用工作目录
-      * @param file         文件流对象
-      * @return             代表文件的JSON对象
-      * @throws JSONException
-      */
-     public static JSONObject getEntry(String appWorkspace, File file) throws JSONException {
-         JSONObject entry = new JSONObject();
-         entry.put("isFile", file.isFile());
-         entry.put("isDirectory", file.isDirectory());
-         String fileName = null;
-         String fullPath = null;
-         String absolutePath = file.getAbsolutePath();
-         if(absolutePath.equals(appWorkspace)) {
-             fileName = File.separator;
-             fullPath = File.separator;
-         } else if(XFileUtils.isFileAncestorOf(appWorkspace, absolutePath)){
-             fullPath = file.getAbsolutePath().substring(appWorkspace.length());
-             fileName = file.getName();
-         }
-         entry.put("name", fileName);
-         entry.put("fullPath", fullPath);
-         entry.put("start", 0);
-         entry.put("end", file.length());
-         return entry;
-     }
+    /**
+     * 返回一个代表文件（夹）的JSON对象
+     *
+     * @param appWorkSpace
+     *            当前应用工作目录
+     * @param file
+     *            文件流对象
+     * @return 代表文件的JSON对象
+     * @throws JSONException
+     */
+    public static JSONObject getEntry(String appWorkspace, File file)
+            throws JSONException {
+        JSONObject entry = new JSONObject();
+        entry.put("isFile", file.isFile());
+        entry.put("isDirectory", file.isDirectory());
+        String fileName = null;
+        String fullPath = null;
+        String absolutePath = file.getAbsolutePath();
+        if (absolutePath.equals(appWorkspace)) {
+            fileName = File.separator;
+            fullPath = File.separator;
+        } else if (XFileUtils.isFileAncestorOf(appWorkspace, absolutePath)) {
+            fullPath = file.getAbsolutePath().substring(appWorkspace.length());
+            fileName = file.getName();
+        }
+        entry.put("name", fileName);
+        entry.put("fullPath", fullPath);
+        entry.put("start", 0);
+        entry.put("end", file.length());
+        return entry;
+    }
 
     /**
      * 修改文件的权限
@@ -169,15 +207,16 @@ public class XFileUtils {
     /**
      * 检查给定的文件路径是否存在
      *
-     * @param  filePath 给定的文件路径
+     * @param filePath
+     *            给定的文件路径
      * @return true：存在,false:不存在.
      */
     public static boolean checkFileExist(String filePath) {
         if (XStringUtils.isEmptyString(filePath)) {
-            XLog.e(CLASS_NAME,"filePath is empty");
+            XLog.e(CLASS_NAME, "filePath is empty");
             return false;
         }
-        if(!new File(filePath).exists()) {
+        if (!new File(filePath).exists()) {
             XLog.e(CLASS_NAME, filePath + " not exist");
             return false;
         }
@@ -186,7 +225,9 @@ public class XFileUtils {
 
     /**
      * 创建临时目录 返回临时目录所创建的目录
-     * @param parent 临时目录所在的父目录 parent必须要存在
+     *
+     * @param parent
+     *            临时目录所在的父目录 parent必须要存在
      * @return 创建失败 返回null 否则返回目录名
      */
     public static String createTempDir(String parent) {
@@ -198,7 +239,6 @@ public class XFileUtils {
         File tmpFile = new File(dirPath);
         return tmpFile.mkdir() ? tmpFile.getAbsolutePath() : null;
     }
-
 
     /**
      * 拷贝文件或者目录
@@ -261,7 +301,8 @@ public class XFileUtils {
      *            文件处理器
      */
     public static void walkDirectory(File srcDir, XFileVisitor visitor) {
-        if ( !srcDir.exists() || !srcDir.isDirectory() || !visitor.isContinueTraverse()) {
+        if (!srcDir.exists() || !srcDir.isDirectory()
+                || !visitor.isContinueTraverse()) {
             return;
         }
         File files[] = srcDir.listFiles();
@@ -283,8 +324,11 @@ public class XFileUtils {
     public static String getMIMEType(String url) {
         int dotIndex = url.lastIndexOf(".");
         /* 获取文件的后缀名 */
-        return dotIndex < 0 ? "*/*" : MimeTypeMap.getSingleton().getMimeTypeFromExtension(url
-                .substring(dotIndex + 1, url.length()).toLowerCase());
+        return dotIndex < 0 ? "*/*"
+                : MimeTypeMap.getSingleton()
+                        .getMimeTypeFromExtension(
+                                url.substring(dotIndex + 1, url.length())
+                                        .toLowerCase());
     }
 
     /**
@@ -374,7 +418,7 @@ public class XFileUtils {
      *            解压的目标路径
      * @param zipFilePath
      *            zip包路径
-     *
+     * 
      * @return 是否成功
      */
     public static boolean unzipFile(String targetPath, String zipFilePath) {
@@ -618,7 +662,7 @@ public class XFileUtils {
      *
      * @param filePath
      *            [in] 文件路径
-     *
+     * 
      * @return
      * */
     public static boolean fileExists(Context context, String filePath) {
@@ -626,19 +670,20 @@ public class XFileUtils {
             return false;
         }
         String absPath = null;
-        if(filePath.startsWith(XConstant.ASSERT_PROTACAL)) {
+        if (filePath.startsWith(XConstant.ASSERT_PROTACAL)) {
             absPath = filePath.substring(XConstant.ASSERT_PROTACAL.length());
             try {
                 InputStream is = context.getAssets().open(absPath);
-                if(is != null) {
+                if (is != null) {
                     return true;
                 }
             } catch (IOException e) {
                 return false;
             }
-        } else if(filePath.startsWith(XConstant.FILE_SCHEME)) {
-            File file = new File(filePath.substring(XConstant.FILE_SCHEME.length()));
-            if(file.exists()){
+        } else if (filePath.startsWith(XConstant.FILE_SCHEME)) {
+            File file = new File(filePath.substring(XConstant.FILE_SCHEME
+                    .length()));
+            if (file.exists()) {
                 return true;
             }
         }
