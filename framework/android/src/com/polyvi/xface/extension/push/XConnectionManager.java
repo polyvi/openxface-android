@@ -21,8 +21,6 @@
 
 package com.polyvi.xface.extension.push;
 
-import java.util.Timer;
-import java.util.TimerTask;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -239,16 +237,6 @@ public class XConnectionManager {
                 mConnection.addPacketListener(
                         mNotificationService.getNotificationPacketListener(),
                         packetFilter);
-                // 执行规定时间之后断开连接
-                TimerTask task = new TimerTask() {
-                    public void run() {
-                        disconnect();
-                        startReconnection();
-                    }
-                };
-                Timer timer = new Timer();
-                timer.schedule(task,
-                        mNotificationService.getDisconnectTime() * 1000L);
             } catch (XMPPException e) {
                 String errorMessage = e.getMessage();
                 if (errorMessage != null
@@ -280,13 +268,7 @@ public class XConnectionManager {
      * 重连服务器
      */
     private void startReconnection() {
-        TimerTask task = new TimerTask() {
-            public void run() {
-                connect();
-            }
-        };
-        Timer timer = new Timer();
-        timer.schedule(task, mNotificationService.getReconnectTime() * 1000L);
+        connect();
     }
 
     /**

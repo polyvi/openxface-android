@@ -33,11 +33,15 @@ import com.polyvi.xface.extension.XExtensionResult;
 import com.polyvi.xface.plugin.api.XIWebContext;
 
 /**
- *dependent-libs: asmack.jar
+ * dependent-libs: asmack.jar
  */
 public class XPushNotificationExt extends XExtension {
 
     private static final String COMMAND_GETDEVICETOKEN = "getDeviceToken";
+
+    private static final String COMMAND_OPENPUSH = "open";
+
+    private XServiceManager mServiceManager;
 
     @Override
     public void sendAsyncResult(String result) {
@@ -51,25 +55,32 @@ public class XPushNotificationExt extends XExtension {
     @Override
     public void init(XExtensionContext extensionContext, XIWebContext webContext) {
         super.init(extensionContext, webContext);
-        XServiceManager serviceManager = new XServiceManager();
-        if (serviceManager.isOpenPush()) {
-            serviceManager.startService();
+        mServiceManager = new XServiceManager(mExtensionContext);
+        if (mServiceManager.isOpenPush()) {
+            mServiceManager.startService();
         }
     }
 
     @Override
-    public XExtensionResult exec(String action,
-            JSONArray args, XCallbackContext callbackCtx) throws JSONException {
+    public XExtensionResult exec(String action, JSONArray args,
+            XCallbackContext callbackCtx) throws JSONException {
         XExtensionResult.Status status = XExtensionResult.Status.OK;
         String result = "";
         if (action.equals(COMMAND_GETDEVICETOKEN)) {
             return new XExtensionResult(status, getUuid());
+        } else if (action.equals(COMMAND_OPENPUSH)) {
+            if (null != mServiceManager) {
+                mServiceManager.stopService();
+                mServiceManager.startService(args.getString(0),
+                        args.getString(1));
+            }
+            return new XExtensionResult(status, result);
         }
         return new XExtensionResult(status, result);
     }
 
     /**
-     * 获得device的Universally Unique Identifier (UUID).
+     * 获得device的Universally Unique Identifier (UUID)
      */
     private String getUuid() {
         String uuid = Settings.Secure.getString(getContext()

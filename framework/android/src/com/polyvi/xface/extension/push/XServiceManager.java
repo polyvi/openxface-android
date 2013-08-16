@@ -24,6 +24,8 @@ package com.polyvi.xface.extension.push;
 import android.content.Context;
 import android.content.Intent;
 
+import com.polyvi.xface.extension.XExtensionContext;
+
 /**
  * 该类主要用于启动push的service
  */
@@ -33,6 +35,18 @@ public final class XServiceManager {
 
     public static final String PACKAGE_NAME = "packageName";
 
+    public static final String HOST = "host";
+
+    public static final String PORT = "port";
+
+    private static  boolean isServiceRunning = false;
+
+    public XServiceManager(XExtensionContext extensionContext) {
+        XNotificationService notificationService = new XNotificationService();
+        notificationService.setExtensionContext(extensionContext);
+        mContext = extensionContext.getSystemContext().getContext();
+    }
+
     /**
      * 启动push的service
      */
@@ -41,6 +55,21 @@ public final class XServiceManager {
             @Override
             public void run() {
                 Intent intent = getIntent();
+                mContext.startService(intent);
+                isServiceRunning = true;
+            }
+        });
+        serviceThread.start();
+    }
+
+    /**
+     * 启动push的service
+     */
+    public void startService(final String host,final String port) {
+        Thread serviceThread = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                Intent intent = getIntent(host,port);
                 mContext.startService(intent);
             }
         });
@@ -58,11 +87,26 @@ public final class XServiceManager {
     }
 
     /**
+     * 获取service的意图
+     * @return service的意图
+     */
+    private Intent getIntent(String host,String port) {
+        Intent intent = new Intent(mContext, XNotificationService.class);
+        intent.putExtra(PACKAGE_NAME, mContext.getPackageName());
+        intent.putExtra(HOST,host);
+        intent.putExtra(PORT, port);
+        return intent;
+    }
+
+    /**
      * 停止service
      */
     public void stopService() {
-        Intent intent = getIntent();
-        mContext.stopService(intent);
+        if(isServiceRunning) {
+            Intent intent = getIntent();
+            mContext.stopService(intent);
+            isServiceRunning = false;
+        }
     }
 
     /**

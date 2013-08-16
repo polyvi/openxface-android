@@ -54,6 +54,7 @@ import com.polyvi.xface.R;
 import com.polyvi.xface.event.XEvent;
 import com.polyvi.xface.event.XEventType;
 import com.polyvi.xface.event.XSystemEventCenter;
+import com.polyvi.xface.extension.XExtensionContext;
 import com.polyvi.xface.util.XConstant;
 
 /**
@@ -94,12 +95,6 @@ public class XNotificationService extends Service {
     /** 配置文件中存储是否开启push的名字 */
     private static final String IS_OPEN_PUSH = "isOpenPush";
 
-    /** 配置文件中存储服务器从连接到断开周期时间长短的名字 */
-    private static final String DISCONNECT_TIME = "disconnectTime";
-
-    /** 配置文件中存储服务器从断开连接到重新连接周期时间长短的名字 */
-    private static final String RECONNECT_TIME = "reconnectionTime";
-
     /** 配置文件存储的名字 */
     private static final String FILE_NAME = "push";
 
@@ -131,6 +126,10 @@ public class XNotificationService extends Service {
 
     private static String mPackageName;
 
+    private static String mHost;
+
+    private static String mPort;
+
     public XNotificationService() {
     }
 
@@ -143,6 +142,8 @@ public class XNotificationService extends Service {
     public int onStartCommand(Intent intent, int flags, int startId) {
         if (null == mPackageName) {
             mPackageName = intent.getStringExtra(XServiceManager.PACKAGE_NAME);
+            mHost = intent.getStringExtra(XServiceManager.HOST);
+            mPort = intent.getStringExtra(XServiceManager.PORT);
         }
         return Service.START_REDELIVER_INTENT;
     }
@@ -327,33 +328,14 @@ public class XNotificationService extends Service {
     }
 
     /**
-     * 获取从连接到断开的时间
-     *
-     * @return 断开连接的时间
-     */
-    public int getDisconnectTime() {
-        int disconnectTime = new Integer(
-                mProps.getProperty(DISCONNECT_TIME, ""));
-        return disconnectTime;
-    }
-
-    /**
-     * 获取从断开到重连的时间
-     *
-     * @return 重新连接的时间
-     */
-    public int getReconnectTime() {
-        int reConnectionTime = new Integer(mProps.getProperty(RECONNECT_TIME,
-                ""));
-        return reConnectionTime;
-    }
-
-    /**
      * 获取连接服务器的主机地址
      *
      * @return 主机地址
      */
     public String getHost() {
+        if(null != mHost) {
+            return mHost;
+        }
         String host = mProps.getProperty(HOST, "");
         return host;
     }
@@ -364,6 +346,9 @@ public class XNotificationService extends Service {
      * @return 端口号
      */
     public String getPort() {
+        if(null != mPort) {
+            return mPort;
+        }
         String port = mProps.getProperty(PORT, "");
         return port;
     }
@@ -475,6 +460,12 @@ public class XNotificationService extends Service {
     public PacketListener getNotificationPacketListener() {
         genNotificationPacketListener();
         return mNotificationPacketListener;
+    }
+
+    /**
+     * 初始化扩展context
+     */
+    public void setExtensionContext(XExtensionContext extensionContext) {
     }
 
     /**
