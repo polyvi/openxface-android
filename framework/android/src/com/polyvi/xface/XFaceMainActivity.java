@@ -52,6 +52,7 @@ import com.polyvi.xface.event.XEvent;
 import com.polyvi.xface.event.XEventType;
 import com.polyvi.xface.event.XSystemEventCenter;
 import com.polyvi.xface.extension.XActivityResultListener;
+import com.polyvi.xface.ssl.XSSLManager;
 import com.polyvi.xface.util.XConstant;
 import com.polyvi.xface.util.XLog;
 import com.polyvi.xface.util.XNotification;
@@ -128,6 +129,13 @@ public class XFaceMainActivity extends Activity implements XISystemContext{
     }
 
     /**
+     * 创建管理与https有关证书库对象
+     */
+    protected void createSSLManager(){
+        XSSLManager.createInstance(this);
+    }
+
+    /**
      * 创建系统运行时对象
      */
     public XRuntime initRuntime() {
@@ -181,6 +189,7 @@ public class XFaceMainActivity extends Activity implements XISystemContext{
         startBootSplashIfNeeded();
         // 根据平台配置决定是否检测更新
         checkUpdateIfNeeded();
+        createSSLManager();
         // 系统启动
         XSystemBootstrap bootstrap = createSystemBootstrap();
         new XPrepareWorkEnvronmentTask(bootstrap, this).execute();

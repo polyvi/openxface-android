@@ -74,7 +74,6 @@ public class XRuntime implements XISystemEventReceiver {
         initExtensionContext();
         registerSystemEventReceiver();
         getAppFactory();
-        XSSLManager.createInstance(systemContext.getContext());
     }
 
     /**

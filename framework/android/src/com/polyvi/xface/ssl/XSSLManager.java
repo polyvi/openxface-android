@@ -20,10 +20,8 @@
 package com.polyvi.xface.ssl;
 
 import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Field;
 import java.security.KeyManagementException;
 import java.security.KeyStore;
@@ -39,10 +37,8 @@ import android.content.Context;
 
 import com.polyvi.xface.configXml.XCertificateConifgParser;
 import com.polyvi.xface.configXml.XXmlOperatorFactory;
-import com.polyvi.xface.util.XBase64;
 import com.polyvi.xface.util.XConstant;
 import com.polyvi.xface.util.XLog;
-import com.polyvi.xface.util.XStringUtils;
 
 /**
  * 管理与https有关证书库（KeyStore）及context对象
@@ -55,7 +51,7 @@ public class XSSLManager {
     private static final String CERTIFICATE_KEY_FILENAME = "CertificateKey.xml";
     private static final String TLS_PROTOCAL_NAME = "TLS";
 
-    private static XSSLManager instance = null;
+    protected static XSSLManager instance = null;
 
     private Context mContext;
     // 保存客户端证书信息
@@ -74,7 +70,7 @@ public class XSSLManager {
         return instance;
     }
 
-    private XSSLManager(Context ctx) {
+    protected XSSLManager(Context ctx) {
         this.mContext = ctx;
         init();
     }
@@ -278,20 +274,7 @@ public class XSSLManager {
      * @param length:解密数据的长度
      * @return ：解密后的数据
      */
-    private byte[] decryptKey(byte[] data, int length) {
-        if(null == data) {
-            return null;
-        }
-        /**对每个字节最高位清零 &0x7f*/
-        ByteArrayOutputStream out = new ByteArrayOutputStream();
-        for (int i = 0; i < length; i++) {
-            byte b = (byte)(data[i] & (byte)0x7f);
-            out.write(b);
-        }
-        String hexData = out.toString();
-        /**对上面得到的字符串进行16进制解码*/
-        byte[] newData = XStringUtils.hexDecode(hexData);
-        /**对上面得到的字符串进行Base64解码*/
-        return XBase64.decode(newData, XBase64.NO_WRAP);
+    protected byte[] decryptKey(byte[] data, int length) {
+        return data;
     }
 }
