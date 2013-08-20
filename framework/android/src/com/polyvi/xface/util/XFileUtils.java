@@ -358,30 +358,6 @@ public class XFileUtils {
     }
 
     /**
-     * @param context
-     *            系统上下文
-     * @param fileName
-     *            源文件名
-     * @param desPath
-     *            需要拷贝的目标路径
-     * @return 成功 true 失败 false
-     */
-    public static boolean copyAssetsToTarget(Context context,
-            String srcFileName, String desPath) {
-        try {
-            String targetFilePath = new File(desPath).getAbsolutePath();
-            InputStream is = context.getAssets().open(srcFileName);
-            XFileUtils.createFileByData(targetFilePath, is);
-            is.close();
-        } catch (IOException e) {
-            XLog.e(CLASS_NAME, e.getMessage());
-            e.printStackTrace();
-            return false;
-        }
-        return true;
-    }
-
-    /**
      * 创建一个文件并写入文件内容<br>
      * 如果文件存在，则会被覆写；如果该文件所在目录不存在，会自动被创建
      *

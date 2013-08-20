@@ -34,8 +34,8 @@ import com.polyvi.xface.core.XConfiguration;
 import com.polyvi.xface.core.XISystemContext;
 import com.polyvi.xface.core.XRuntime;
 import com.polyvi.xface.util.XAppUtils;
+import com.polyvi.xface.util.XAssetsFileUtils;
 import com.polyvi.xface.util.XConstant;
-import com.polyvi.xface.util.XFileUtils;
 import com.polyvi.xface.util.XLog;
 
 /**
@@ -80,7 +80,7 @@ public class XPreinstalledAppBatchInstaller extends XAbstractPreIntaller {
             }
             File destFile = new File(XAppUtils.generateAppIconPath(
                     application.getAppId(), application.getAppInfo().getIcon()));
-            XFileUtils
+            XAssetsFileUtils
                     .copyAssetsToTarget(mContext.getContext(),
                             getIconPathInAsset(application),
                             destFile.getAbsolutePath());
@@ -153,7 +153,7 @@ public class XPreinstalledAppBatchInstaller extends XAbstractPreIntaller {
         // 解析完后将app.xml copy到对应app目录下
         String targetPath = getAppRoot(buildingApp.getAppId())
                 + XConstant.APP_CONFIG_FILE_NAME;
-        boolean ret = XFileUtils.copyAssetsToTarget(mContext.getContext(),
+        boolean ret = XAssetsFileUtils.copyAssetsToTarget(mContext.getContext(),
                 appDirNameInAsset + File.separator
                         + XConstant.APP_CONFIG_FILE_NAME, targetPath);
         if (!ret) {
