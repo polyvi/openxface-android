@@ -23,7 +23,6 @@ package com.polyvi.xface.util;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
-import java.io.UnsupportedEncodingException;
 import java.nio.ByteBuffer;
 import java.security.InvalidKeyException;
 import java.security.Key;
@@ -81,27 +80,16 @@ public class XCryptor {
     /**
      * md5算法
      *
-     * @param contentStr
+     * @param content
      *            [in] 需要求出md5值的内容
      *
      * @return 返回md5值
      */
-    public String calMD5Value(char[] content) {
-        //TODO:content是XBASE64后的字符串
+    public String calMD5Value(byte[] content) {
         if (null == content) {
             return null;
         }
         MessageDigest md5 = null;
-        byte[] byteArray = null;
-
-        try {
-            byteArray = String.valueOf(content).getBytes("UTF-8");
-        } catch (UnsupportedEncodingException e1) {
-            XLog.e(CLASS_NAME, "String convert to byte array error!");
-            e1.printStackTrace();
-            return null;
-        }
-
         try {
             md5 = MessageDigest.getInstance("MD5");
         } catch (Exception e) {
@@ -109,7 +97,7 @@ public class XCryptor {
             e.printStackTrace();
             return null;
         }
-        byte[] md5Bytes = md5.digest(byteArray);
+        byte[] md5Bytes = md5.digest(content);
         StringBuffer hexValue = new StringBuffer();
         for (int i = 0; i < md5Bytes.length; i++) {
             int val = ((int) md5Bytes[i]) & 0xff;

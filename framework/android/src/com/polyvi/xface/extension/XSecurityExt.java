@@ -24,6 +24,7 @@ package com.polyvi.xface.extension;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -319,9 +320,14 @@ public class XSecurityExt extends XExtension {
     }
 
     private String digest(String data) {
-        char[] rawData = data.toCharArray();
         XCryptor cryptor = new XCryptor();
-        return cryptor.calMD5Value(rawData);
+        try {
+            return cryptor.calMD5Value(data.getBytes("UTF-8"));
+        } catch (UnsupportedEncodingException e) {
+            XLog.e(CLASS_NAME, "digest failed: UnsupportedEncodingException");
+            e.printStackTrace();
+        }
+        return null;
     }
 
     /**

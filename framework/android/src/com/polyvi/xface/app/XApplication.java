@@ -295,7 +295,7 @@ public class XApplication implements XIApplication, XIWebContext {
      *            安全资源过滤器
      * @return
      */
-    public Iterator<char[]> getResourceIterator(XIResourceFilter filter) {
+    public Iterator<byte[]> getResourceIterator(XIResourceFilter filter) {
         return mRunningMode.createResourceIterator(this, filter);
     }
 
