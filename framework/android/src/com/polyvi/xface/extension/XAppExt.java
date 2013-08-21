@@ -26,7 +26,6 @@ import java.io.File;
 
 import org.json.JSONArray;
 import org.json.JSONException;
-import org.json.JSONObject;
 
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -55,7 +54,6 @@ public class XAppExt extends XExtension {
     private static final String COMMAND_CLEAR_HISTORY = "clearHistory";
     private static final String COMMAND_CLEAR_CACHE = "clearCache";
     private static final String COMMAND_START_NATIVE_APP = "startNativeApp";
-    private static final String COMMAND_GET_CHANNEL = "getChannel";
     private static final String COMMAND_IS_NATIVE_APP_INSTALLED = "isNativeAppInstalled";
     private static final String COMMAND_TEL_LINK_ENABLE = "telLinkEnable";
 
@@ -81,7 +79,8 @@ public class XAppExt extends XExtension {
 
     @Override
     public boolean isAsync(String action) {
-        if (action.equals(COMMAND_START_SYSTEM_COMPONENT)) {
+        if (action.equals(COMMAND_START_SYSTEM_COMPONENT) ||
+                action.equals(COMMAND_OPEN_URL)) {
             return false;
         }
         return true;
@@ -138,11 +137,6 @@ public class XAppExt extends XExtension {
                         args.getString(0), args.getString(1))) {
                     status = XExtensionResult.Status.ERROR;
                 }
-            } else if (COMMAND_GET_CHANNEL.equals(action)) {
-                return null == getChannel(mWebContext) ? new XExtensionResult(
-                        XExtensionResult.Status.ERROR, "get app channel failed")
-                        : new XExtensionResult(XExtensionResult.Status.OK,
-                                getChannel(mWebContext));
             } else if (COMMAND_IS_NATIVE_APP_INSTALLED.equals(action)) {
                 boolean installResult = false;
                 if(isAppInstalled(args.getString(0))) {
@@ -377,25 +371,6 @@ public class XAppExt extends XExtension {
         }
 
         return true;
-    }
-
-    /**
-     * 获取app的channel信息
-     *
-     * @return webContext的channel信息
-     */
-    public JSONObject getChannel(XIWebContext webContext) {
-        JSONObject channel = new JSONObject();
-        try {
-            channel.put("id", webContext.getApplication().getAppInfo()
-                    .getChannelId());
-            channel.put("name", webContext.getApplication().getAppInfo()
-                    .getChannelName());
-            return channel;
-        } catch (JSONException e) {
-            e.printStackTrace();
-            return null;
-        }
     }
 
     /**

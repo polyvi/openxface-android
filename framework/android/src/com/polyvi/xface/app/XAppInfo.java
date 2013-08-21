@@ -48,11 +48,6 @@ public class XAppInfo extends XBasedAppInfo {
     /** 定义此应用最低引擎版本需求 */
     private String mEngineRequired;
 
-    /** 渠道ID */
-    private String mChannelId;
-    /** 渠道名称 */
-    private String mChannelName;
-
     /** 该应用允许访问url的白名单 */
     private XWhiteList mWhiteList;
 
@@ -61,8 +56,6 @@ public class XAppInfo extends XBasedAppInfo {
 
     public XAppInfo() {
         mAppRunningMode = "local";
-        mChannelId = "";
-        mChannelName = "";
         mWhiteList = new XWhiteList();
     }
 
@@ -148,34 +141,6 @@ public class XAppInfo extends XBasedAppInfo {
      */
     public void setEngineRequired(String engineRequired) {
         mEngineRequired = engineRequired;
-    }
-
-    /**
-     * 获取渠道id
-     */
-    public String getChannelId() {
-        return mChannelId;
-    }
-
-    /**
-     * 设置渠道id
-     */
-    public void setChannelId(String channelId) {
-        mChannelId = channelId;
-    }
-
-    /**
-     * 获取渠道名称
-     */
-    public String getChannelName() {
-        return mChannelName;
-    }
-
-    /**
-     * 设置渠道名称
-     */
-    public void setChannelName(String channelName) {
-        mChannelName = channelName;
     }
 
     @Override

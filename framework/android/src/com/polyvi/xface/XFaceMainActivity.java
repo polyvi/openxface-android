@@ -136,6 +136,13 @@ public class XFaceMainActivity extends Activity implements XISystemContext{
     }
 
     /**
+     * 创建Configuration对象
+     */
+    protected void initConfiguration(){
+        XConfiguration.getInstance();
+    }
+
+    /**
      * 创建系统运行时对象
      */
     public XRuntime initRuntime() {
@@ -159,6 +166,7 @@ public class XFaceMainActivity extends Activity implements XISystemContext{
     private void systemBoot() {
         initMobclickAgent();
         initSystemEventCenter();
+        initConfiguration();
         XConfiguration.getInstance().loadPlatformStrings(getContext());
         mStartParams = XStartParams.parse(getIntent().getStringExtra(
                 XConstant.TAG_APP_START_PARAMS));

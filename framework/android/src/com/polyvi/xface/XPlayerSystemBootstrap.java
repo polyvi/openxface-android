@@ -208,7 +208,7 @@ public class XPlayerSystemBootstrap implements XSystemBootstrap {
      * @param ams
      *            AppManagement对象
      * */
-    private void initPlayerApp(XRuntime runtime) {
+    protected void initPlayerApp(XRuntime runtime) {
         if (!runtime.initStartApp(getStartAppInfo())) {
             return;
         }

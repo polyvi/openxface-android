@@ -176,7 +176,7 @@ public class XSystemInitializer implements XSystemBootstrap,
      *
      * @param runtime
      */
-    private void doPreInstall(XAMSComponent ams, XRuntime runtime) {
+    protected void doPreInstall(XAMSComponent ams, XRuntime runtime) {
         XIPreInstallTask task = createPreInstallTask(ams, runtime);
         task.run();
     }

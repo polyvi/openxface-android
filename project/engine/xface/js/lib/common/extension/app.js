@@ -80,11 +80,11 @@ app.prototype.openUrl = function(url, successCallback, errorCallback){
  * @param {String} successCallback.channel.name 渠道名称
  * @param {Function} [errorCallback]   失败回调函数
  * @platform Android, iOS, Wp8
- * @since 3.0.0
+ * @since 3.1.0
  */
 app.prototype.getChannel = function(successCallback, errorCallback){
     argscheck.checkArgs('fF', 'app.getChannel', arguments);
-    exec(successCallback, errorCallback, null, "App", "getChannel", []);
+    exec(successCallback, errorCallback, null, "Channel", "getChannel", []);
 };
 
 /**

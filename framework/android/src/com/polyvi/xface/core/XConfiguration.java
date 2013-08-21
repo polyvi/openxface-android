@@ -65,7 +65,7 @@ public class XConfiguration {
 
     private boolean mWorkDirectoryChanged = false;
     // 解析config.xml得到的configInfo对象
-    private XSysConfigInfo mSysConfigInfo;
+    protected XSysConfigInfo mSysConfigInfo;
 
     private static HashMap<String, XExtensionEntry> mExtensionsCache;
 
@@ -82,7 +82,7 @@ public class XConfiguration {
     };
 
     /** singleton */
-    private static XConfiguration instance = null;
+    protected static XConfiguration instance = null;
 
     /** 工作目录路径 */
     private String mWorkDir;
@@ -90,7 +90,7 @@ public class XConfiguration {
     /** 是否支持点击view上的数字触发联系人添加操作 */
     private boolean mTelLinkEnabled = true;
 
-    private XConfiguration() {
+    protected XConfiguration() {
     }
 
     public static XConfiguration getInstance() {
@@ -102,7 +102,7 @@ public class XConfiguration {
 
     /**
      * 从配置文件读取系统配置数据
-     * 
+     *
      * @param configStream
      *            配置文件输入流
      * @throws XTagNotFoundException
@@ -116,7 +116,7 @@ public class XConfiguration {
 
     /**
      * 设置程序的工作空间
-     * 
+     *
      * @param workDir
      *            工作空间绝对路径
      */
@@ -126,7 +126,7 @@ public class XConfiguration {
 
     /**
      * 获取所有的application安装目录
-     * 
+     *
      * @return 所有application安装目录绝对路径
      */
     public String getAppInstallDir() {
@@ -135,7 +135,7 @@ public class XConfiguration {
 
     /**
      * 获取sys_data目录
-     * 
+     *
      * @return sys_data目录绝对路径
      */
     public String getSysDataDir() {
@@ -144,7 +144,7 @@ public class XConfiguration {
 
     /**
      * 获取程序的工作空间
-     * 
+     *
      * @return 工作空间绝对路径
      */
     public String getWorkDirectory() {
@@ -161,7 +161,7 @@ public class XConfiguration {
 
     /**
      * 获取startapp的id
-     * 
+     *
      * @param sysCtx
      *            系统上下文环境
      * @return startAppId
@@ -205,7 +205,7 @@ public class XConfiguration {
 
     /**
      * 从config.xml配置文件中读取是否需要显示splash图片
-     * 
+     *
      * @return
      */
     public boolean readShowSplash() {
@@ -215,7 +215,7 @@ public class XConfiguration {
 
     /**
      * 从config.xml配置文件中读取是否需要自动隐藏splash图片
-     * 
+     *
      * @return
      */
     public boolean readAutoHideSplash() {
@@ -225,7 +225,7 @@ public class XConfiguration {
 
     /**
      * 从config.xml配置文件中读取是否需要全屏显示
-     * 
+     *
      * @return
      */
     public boolean readFullscreen() {
@@ -235,7 +235,7 @@ public class XConfiguration {
 
     /**
      * 从config.xml配置文件中读取是否需要检测更新的服务器地址
-     * 
+     *
      * @return
      */
     public boolean readUpdateCheck() {
@@ -245,7 +245,7 @@ public class XConfiguration {
 
     /**
      * 从config.xml配置文件中读取需要检测更新的服务器地址
-     * 
+     *
      * @return
      */
     public String readUpdateAddress() {
@@ -255,7 +255,7 @@ public class XConfiguration {
 
     /**
      * 从config.xml配置文件中读取splash显示的时间
-     * 
+     *
      * @return
      */
     public String readSplashDelay() {
@@ -265,7 +265,7 @@ public class XConfiguration {
 
     /**
      * 从config.xml配置文件中读取引擎版本
-     * 
+     *
      * @return
      */
     public String readEngineVersion() {
@@ -275,7 +275,7 @@ public class XConfiguration {
 
     /**
      * 从config.xml配置文件中读取build号
-     * 
+     *
      * @return
      */
     public String readEngineBuild() {
@@ -285,7 +285,7 @@ public class XConfiguration {
 
     /**
      * 从config.xml配置文件中读取加载应用时等待xface.js是否加载完成的时间
-     * 
+     *
      * @return
      */
     public String readLoadUrlTimeout() {
@@ -295,7 +295,7 @@ public class XConfiguration {
 
     /**
      * 从config.xml配置文件中读取插件配置信息
-     * 
+     *
      * @return
      */
     public HashMap<String, String> readPluginsConfig() {
@@ -305,7 +305,7 @@ public class XConfiguration {
 
     /**
      * 从config.xml配置文件中读取插件描述信息
-     * 
+     *
      * @return
      */
     public Set<String> readPluginDescriptions() {
@@ -317,7 +317,7 @@ public class XConfiguration {
 
     /**
      * 配置系统的工作目录
-     * 
+     *
      * @param context
      *            android程序对应的Context对象
      * @param workDirName
@@ -338,7 +338,7 @@ public class XConfiguration {
 
     /**
      * 获取程序的工作空间目录,'/'结尾
-     * 
+     *
      * @param context
      *            android程序对应的Context对象
      * @param workDirName
@@ -418,7 +418,7 @@ public class XConfiguration {
 
     /**
      * 设置工作目录配置策略
-     * 
+     *
      * @param ctx
      * @param wds
      */
@@ -437,7 +437,7 @@ public class XConfiguration {
 
     /**
      * 工作目录是否变化的标志
-     * 
+     *
      * @return
      */
     public boolean isWorkDirectoryChanged() {
@@ -446,7 +446,7 @@ public class XConfiguration {
 
     /**
      * 获得工作目录最终的配置策略
-     * 
+     *
      * @return
      */
     private int getWorkDirStrategy(Context ctx) {
@@ -459,7 +459,7 @@ public class XConfiguration {
 
     /**
      * 弹出错误消息,用户点击后程序退出
-     * 
+     *
      * @param title
      *            弹出框标题
      * @param exitMessage
@@ -497,7 +497,7 @@ public class XConfiguration {
 
     /**
      * 加载平台的string常量
-     * 
+     *
      * @param context
      */
     public void loadPlatformStrings(Context context) {
