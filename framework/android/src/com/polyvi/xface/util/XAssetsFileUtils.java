@@ -39,10 +39,10 @@ public class XAssetsFileUtils {
      * @return
      * @throws IOException
      */
-    public static boolean isDirectory(Context context, String filePath)
-            throws IOException {
-        String childrens[] = context.getAssets().list(filePath);
-        if (childrens.length > 0) {
+    public static boolean isDirectory(Context context, String filePath){
+        try {
+            context.getAssets().open(filePath);
+        } catch (IOException e) {
             return true;
         }
         return false;
@@ -58,11 +58,12 @@ public class XAssetsFileUtils {
      */
     public static boolean isFile(Context context, String filePath)
             throws IOException {
-        String childrens[] = context.getAssets().list(filePath);
-        if (childrens.length <= 0) {
-            return true;
+        try {
+            context.getAssets().open(filePath);
+        } catch (IOException e) {
+            return false;
         }
-        return false;
+        return true;
     }
 
     /**
