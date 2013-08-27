@@ -22,6 +22,7 @@
 package com.polyvi.xface.util;
 
 import java.io.ByteArrayInputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.nio.ByteBuffer;
 import java.security.InvalidKeyException;
@@ -62,16 +63,16 @@ public class XCryptor {
     private static final int ENCRYPT_PART_LENGTH = 100;
     // AES加密算法
     private static final String AES_ALGORITHM = "AES";
-    //DES加密算法
+    // DES加密算法
     private static final String DES_ALGORITHM = "DES";
-    //3DES加密算法
+    // 3DES加密算法
     private static final String TRIPLE_DES_ALGORITHM = "DESede/CBC/PKCS5Padding";
     private static final String KEY_ALOGRITHEM = "DESede";
     // 生成的密钥的长度
     private static final int KEY_SIZE = 128;
 
-    /**加解密报错提示*/
-    private static final String KEY_EMPTY_ERROR  = "Error:key null or empty";
+    /** 加解密报错提示 */
+    private static final String KEY_EMPTY_ERROR = "Error:key null or empty";
     private static final String DATA_EMPTY_ERROR = "Error:data null or empty";
     private static final String CONVERTION_ERROR = "Error: Preparing Convertion";
     private static final String CRYPTION_ERROR = "Error:cryption error";
@@ -109,6 +110,45 @@ public class XCryptor {
     }
 
     /**
+     * 计算md5值
+     *
+     * @param is
+     *            [in] 需要求出md5值的内容，输入流形式
+     * @return
+     */
+    public String calMD5Value(InputStream is) {
+        if (null == is) {
+            return null;
+        }
+        try {
+            MessageDigest md5 = MessageDigest.getInstance("MD5");
+            byte[] bytes = new byte[XConstant.BUFFER_LEN];
+            int byteCount;
+            while ((byteCount = is.read(bytes)) > 0) {
+                md5.update(bytes, 0, byteCount);
+            }
+            byte[] digest = md5.digest();
+            // byte[] to String
+            StringBuffer hexValue = new StringBuffer();
+            for (int i = 0; i < digest.length; i++) {
+                int val = ((int) digest[i]) & 0xff;
+                if (val < 16)
+                    hexValue.append("0");
+                hexValue.append(Integer.toHexString(val));
+            }
+            return hexValue.toString();
+        } catch (NoSuchAlgorithmException e) {
+            XLog.e(CLASS_NAME,
+                    "calMD5Value(InputStream is): Can't get instance of MD5!");
+            e.printStackTrace();
+        } catch (IOException e) {
+            XLog.e(CLASS_NAME, "calMD5Value(InputStream is): IOException");
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    /**
      * 实例化Cipher
      *
      * @param key
@@ -139,6 +179,7 @@ public class XCryptor {
 
     /**
      * 通过公钥加密
+     *
      * @param data
      * @param publicKey
      * @return
@@ -146,7 +187,7 @@ public class XCryptor {
      */
     public byte[] encryptRSA(byte[] data, byte[] publicKey)
             throws XCryptionException, IllegalArgumentException {
-        if(null == data || null == publicKey) {
+        if (null == data || null == publicKey) {
             XLog.e(CLASS_NAME, "encryptRSA param is null!");
             throw new IllegalArgumentException();
         }
@@ -154,9 +195,10 @@ public class XCryptor {
         try {
             X509EncodedKeySpec x509KeySpec = new X509EncodedKeySpec(publicKey);
             KeyFactory keyFactory = KeyFactory.getInstance(RSA_ALGORITHM);
-            RSAPublicKey pubKey = (RSAPublicKey)keyFactory.generatePublic(x509KeySpec);
+            RSAPublicKey pubKey = (RSAPublicKey) keyFactory
+                    .generatePublic(x509KeySpec);
             Cipher cipher = Cipher.getInstance(RSA_ALGORITHM);
-            if(null == cipher) {
+            if (null == cipher) {
                 throw new XCryptionException(CRYPTION_ERROR);
             }
             cipher.init(Cipher.ENCRYPT_MODE, pubKey);
@@ -212,6 +254,7 @@ public class XCryptor {
 
     /**
      * 通过私钥加密
+     *
      * @param data
      * @param privateKey
      * @return
@@ -219,17 +262,19 @@ public class XCryptor {
      */
     public byte[] decryptRSA(byte[] data, byte[] privateKey)
             throws XCryptionException, IllegalArgumentException {
-        if(null == data || null == privateKey) {
+        if (null == data || null == privateKey) {
             XLog.e(CLASS_NAME, "decryptRAS param is null!");
             throw new IllegalArgumentException();
         }
         byte[] decryptData = null;
         try {
-            PKCS8EncodedKeySpec pkcs8KeySpec = new PKCS8EncodedKeySpec(privateKey);
+            PKCS8EncodedKeySpec pkcs8KeySpec = new PKCS8EncodedKeySpec(
+                    privateKey);
             KeyFactory keyFactory = KeyFactory.getInstance(RSA_ALGORITHM);
-            RSAPrivateKey priKey = (RSAPrivateKey)keyFactory.generatePrivate(pkcs8KeySpec);
+            RSAPrivateKey priKey = (RSAPrivateKey) keyFactory
+                    .generatePrivate(pkcs8KeySpec);
             Cipher cipher = instanceOfCipher(priKey);
-            if(null == cipher) {
+            if (null == cipher) {
                 throw new XCryptionException(CRYPTION_ERROR);
             }
             cipher.init(Cipher.ENCRYPT_MODE, priKey);
@@ -284,7 +329,6 @@ public class XCryptor {
      *            [in] 加密数据
      * @param publicKey
      *            [in] 解密公钥
-     *
      * @return 返回解密后的数据输入流
      */
     public InputStream decryptByPublicKey(byte[] encryptData,
@@ -334,12 +378,11 @@ public class XCryptor {
      * 需要处理掉-1和0和1
      *
      * TODO:以后android的doFinal方法解决此问题后该函数可以删除
-     *
+     * 
      * @param decryptBuffer
      *            [in] 需要处理的二进制缓存
      * @param decryptDataLen
      *            [in] 需要处理的二进制数组长度
-     *
      * @return 去掉-1、0、1的二进制数组
      */
     private byte[] handleDoFinalBytes(ByteBuffer decryptBuffer,
@@ -473,7 +516,6 @@ public class XCryptor {
         return XFileUtils.writeFileByString(filePath, new String(fileContent));
     }
 
-
     /**
      * 用DES算法对字符串加密
      *
@@ -484,7 +526,7 @@ public class XCryptor {
      * @return 加密过后得到byte数组
      * @throws XCryptionException
      */
-    public  byte[] encryptBytesForDES(byte[] content, byte[] key)
+    public byte[] encryptBytesForDES(byte[] content, byte[] key)
             throws XCryptionException {
         return cryptBytes(DES_ALGORITHM, DES_ALGORITHM, content, key, true);
     }
@@ -500,9 +542,11 @@ public class XCryptor {
      * @throws XCryptionException
      * @throws NullPointerException
      */
-    public  boolean encryptFileForDES(byte[] key, String sourceFilePath,
-            String targetFilePath) throws NullPointerException, XCryptionException {
-        return cryptFile(DES_ALGORITHM, DES_ALGORITHM, key, sourceFilePath, targetFilePath, true);
+    public boolean encryptFileForDES(byte[] key, String sourceFilePath,
+            String targetFilePath) throws NullPointerException,
+            XCryptionException {
+        return cryptFile(DES_ALGORITHM, DES_ALGORITHM, key, sourceFilePath,
+                targetFilePath, true);
     }
 
     /**
@@ -515,7 +559,7 @@ public class XCryptor {
      * @return 解密过后得到byte数组
      * @throws XCryptionException
      */
-    public  byte[] decryptBytesForDES(byte[] content, byte[] key)
+    public byte[] decryptBytesForDES(byte[] content, byte[] key)
             throws XCryptionException {
         return cryptBytes(DES_ALGORITHM, DES_ALGORITHM, content, key, false);
     }
@@ -531,9 +575,11 @@ public class XCryptor {
      * @throws XCryptionException
      * @throws NullPointerException
      */
-    public  boolean decryptFileForDES(byte[] key, String sourceFilePath,
-            String targetFilePath) throws NullPointerException, XCryptionException {
-        return cryptFile(DES_ALGORITHM, DES_ALGORITHM, key, sourceFilePath, targetFilePath, false);
+    public boolean decryptFileForDES(byte[] key, String sourceFilePath,
+            String targetFilePath) throws NullPointerException,
+            XCryptionException {
+        return cryptFile(DES_ALGORITHM, DES_ALGORITHM, key, sourceFilePath,
+                targetFilePath, false);
     }
 
     /**
@@ -546,9 +592,10 @@ public class XCryptor {
      * @return 加密过后得到byte数组
      * @throws XCryptionException
      */
-    public  byte[] encryptBytesFor3DES(byte[] content, byte[] key)
+    public byte[] encryptBytesFor3DES(byte[] content, byte[] key)
             throws XCryptionException {
-        return cryptBytes(TRIPLE_DES_ALGORITHM, KEY_ALOGRITHEM, content, key, true);
+        return cryptBytes(TRIPLE_DES_ALGORITHM, KEY_ALOGRITHEM, content, key,
+                true);
     }
 
     /**
@@ -561,9 +608,10 @@ public class XCryptor {
      * @return 解密过后得到byte数组
      * @throws XCryptionException
      */
-    public  byte[] decryptBytesFor3DES(byte[] content, byte[] key)
+    public byte[] decryptBytesFor3DES(byte[] content, byte[] key)
             throws XCryptionException {
-        return cryptBytes(TRIPLE_DES_ALGORITHM, KEY_ALOGRITHEM, content, key, false);
+        return cryptBytes(TRIPLE_DES_ALGORITHM, KEY_ALOGRITHEM, content, key,
+                false);
     }
 
     /**
@@ -578,20 +626,20 @@ public class XCryptor {
      * @return 经过加解密的数据
      * @throws Exception
      */
-    private  byte[] cryptBytes(String cryptAlogrithem, String keyAlogrithem,
-            byte[] content, byte[] sKey,
-            boolean isEncrypt) throws XCryptionException {
-        if(null == sKey || XStringUtils.isEmptyString(new String(sKey))) {
+    private byte[] cryptBytes(String cryptAlogrithem, String keyAlogrithem,
+            byte[] content, byte[] sKey, boolean isEncrypt)
+            throws XCryptionException {
+        if (null == sKey || XStringUtils.isEmptyString(new String(sKey))) {
             XLog.e(CLASS_NAME, KEY_EMPTY_ERROR);
             throw new NullPointerException(KEY_EMPTY_ERROR);
         }
-        if(null == content || 0 == content.length) {
+        if (null == content || 0 == content.length) {
             XLog.e(CLASS_NAME, DATA_EMPTY_ERROR);
             throw new NullPointerException(DATA_EMPTY_ERROR);
         }
         try {
-            Cipher cipher = prepareConvertion(cryptAlogrithem, keyAlogrithem, sKey,
-                    isEncrypt ? Cipher.ENCRYPT_MODE : Cipher.DECRYPT_MODE);
+            Cipher cipher = prepareConvertion(cryptAlogrithem, keyAlogrithem,
+                    sKey, isEncrypt ? Cipher.ENCRYPT_MODE : Cipher.DECRYPT_MODE);
             if (null == cipher) {
                 XLog.e(CLASS_NAME, CRYPTION_ERROR);
                 throw new XCryptionException(CRYPTION_ERROR);
@@ -600,12 +648,11 @@ public class XCryptor {
         } catch (Exception e) {
             XLog.e(CLASS_NAME, CRYPTION_ERROR);
             throw new XCryptionException(CRYPTION_ERROR);
-        } catch(OutOfMemoryError e) {
+        } catch (OutOfMemoryError e) {
             XLog.e(CLASS_NAME, OUT_OF_MEMORY_ERROR);
             throw new XCryptionException(CRYPTION_ERROR);
         }
     }
-
 
     /**
      * 对称加解密文件操作并返回操作后的文件绝对路径
@@ -620,25 +667,25 @@ public class XCryptor {
      *            标示加密还是解密，true：加密，false：解密。
      * @return 解密后文件的绝对路径
      */
-    private  boolean cryptFile(String cryptAlogrithem, String keyAlogrithem,
-            byte[] sKey, String sourceFilePath,
-            String targetFilePath, boolean isEncrypt)
-            throws NullPointerException, XCryptionException {
+    private boolean cryptFile(String cryptAlogrithem, String keyAlogrithem,
+            byte[] sKey, String sourceFilePath, String targetFilePath,
+            boolean isEncrypt) throws NullPointerException, XCryptionException {
         // 检查要加解密的key为空
-        if(null == sKey || XStringUtils.isEmptyString(new String(sKey))) {
+        if (null == sKey || XStringUtils.isEmptyString(new String(sKey))) {
             XLog.e(CLASS_NAME, KEY_EMPTY_ERROR);
             throw new NullPointerException(KEY_EMPTY_ERROR);
         }
         try {
             // 从解密前文件读入数据到缓冲区
             byte[] inOutb = XFileUtils.readBytesFromFile(sourceFilePath);
-            //TODO:目前为了和服务器兼容，文件加解密有base64转码操作，以后考虑去掉。
-            if(!isEncrypt) {
+            // TODO:目前为了和服务器兼容，文件加解密有base64转码操作，以后考虑去掉。
+            if (!isEncrypt) {
                 inOutb = XBase64.decode(inOutb, XBase64.NO_WRAP);
             }
-            //解密缓冲区数据
-            byte[] result = cryptBytes(cryptAlogrithem, keyAlogrithem, inOutb, sKey, isEncrypt);
-            if(isEncrypt) {
+            // 解密缓冲区数据
+            byte[] result = cryptBytes(cryptAlogrithem, keyAlogrithem, inOutb,
+                    sKey, isEncrypt);
+            if (isEncrypt) {
                 result = XBase64.encode(result, XBase64.NO_WRAP);
             }
             // 把缓冲区数据写入解密后文件
@@ -646,7 +693,7 @@ public class XCryptor {
         } catch (Exception e) {
             XLog.e(CLASS_NAME, CRYPTION_ERROR);
             throw new XCryptionException(CRYPTION_ERROR);
-        } catch(OutOfMemoryError e) {
+        } catch (OutOfMemoryError e) {
             XLog.e(CLASS_NAME, OUT_OF_MEMORY_ERROR);
             throw new XCryptionException(CRYPTION_ERROR);
         }
@@ -661,23 +708,24 @@ public class XCryptor {
      *            加解密的模式：ENCRYPT_MODE 和 DECRYPT_MODE
      * @return Cipher
      */
-    private  Cipher prepareConvertion(String cryptAlogrithem, String keyAlogrithem,
-            byte[] sKey, int mode)
+    private Cipher prepareConvertion(String cryptAlogrithem,
+            String keyAlogrithem, byte[] sKey, int mode)
             throws XCryptionException {
         // 检查要加解密的key为空
-        if(null == sKey || XStringUtils.isEmptyString(new String(sKey))) {
+        if (null == sKey || XStringUtils.isEmptyString(new String(sKey))) {
             XLog.e(CLASS_NAME, KEY_EMPTY_ERROR);
             throw new NullPointerException(KEY_EMPTY_ERROR);
         }
         Cipher cipher = null;
         try {
-            SecretKeyFactory keyFactory = SecretKeyFactory.getInstance(keyAlogrithem);
+            SecretKeyFactory keyFactory = SecretKeyFactory
+                    .getInstance(keyAlogrithem);
             byte[] keyData = sKey;
-            KeySpec keySpec = keyAlogrithem == KEY_ALOGRITHEM ?
-                    new DESedeKeySpec(keyData) : new DESKeySpec(keyData);
+            KeySpec keySpec = keyAlogrithem == KEY_ALOGRITHEM ? new DESedeKeySpec(
+                    keyData) : new DESKeySpec(keyData);
             Key key = keyFactory.generateSecret(keySpec);
             cipher = Cipher.getInstance(cryptAlogrithem);
-            if(keyAlogrithem == KEY_ALOGRITHEM ) {
+            if (keyAlogrithem == KEY_ALOGRITHEM) {
                 IvParameterSpec ivSpec = new IvParameterSpec(new byte[8]);
                 cipher.init(mode, key, ivSpec);
             } else {
