@@ -42,7 +42,7 @@ public class XNativeToJsMessageQueue {
     private static final String LOG_TAG = XNativeToJsMessageQueue.class.getSimpleName();
 
     // 默认从本地执行js的桥接模式
-    private static final int DEFAULT_BRIDGE_MODE = 2;
+    private static final int DEFAULT_BRIDGE_MODE = 1;
 
     // 设置该标志强制扩展的结果被编码成js格式的字符串而非自定义格式
     private static final boolean FORCE_ENCODE_USING_EVAL = false;
