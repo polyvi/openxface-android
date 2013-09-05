@@ -82,7 +82,7 @@ public class XExtensionManager {
             String arguments) {
         final XExtension extension = mExtensionMap.get(service);
         if (null == extension) {
-            XLog.d(CLASS_NAME, "%s not registered!", service);
+            XLog.e(CLASS_NAME, "%s not registered!", service);
             XExtensionResult er = new XExtensionResult(
                     XExtensionResult.Status.CLASS_NOT_FOUND_EXCEPTION);
             mWebContext.sendExtensionResult(er, callbackId);
