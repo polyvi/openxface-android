@@ -152,5 +152,6 @@ public interface XISystemContext {
      *
      * @return 安全策略
      */
-    public XSecurityPolicy getSecurityPolily();
+    public XSecurityPolicy getSecurityPolicy();
+
 }

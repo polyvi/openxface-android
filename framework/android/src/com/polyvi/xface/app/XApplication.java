@@ -33,6 +33,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.webkit.WebSettings;
 
+import com.polyvi.xface.XSecurityPolicy;
 import com.polyvi.xface.XStartParams;
 import com.polyvi.xface.core.XAppRunningMode;
 import com.polyvi.xface.core.XConfiguration;
@@ -105,6 +106,9 @@ public class XApplication implements XIApplication, XIWebContext {
 
     /** 监视app是否处于空闲状态 */
     private XIdleWatcher mWatcher;
+
+    /** app的安全策略 */
+    private XSecurityPolicy mSecurityPolicy;
 
     public XApplication(XAppInfo appInfo) {
         updateAppInfo(appInfo);
@@ -493,7 +497,11 @@ public class XApplication implements XIApplication, XIWebContext {
         mAppView.bindJSNativeBridge(getPlugins());
         mEvtHandler.registerSystemEventReceiver();
         checkEngineVersionRequired(this);
-        mRunningMode.loadApp(this, mSysContext.getSecurityPolily());
+        if(null == mSecurityPolicy) {
+            //安全策略为空，则采用系统默认的安全策略
+            mSecurityPolicy = mSysContext.getSecurityPolicy();
+        }
+        mRunningMode.loadApp(this, mSecurityPolicy);
         return true;
     }
 
@@ -509,7 +517,7 @@ public class XApplication implements XIApplication, XIWebContext {
             mExtensionManager.onAppClosed();
         }
         closeView();
-        return mSysContext.getSecurityPolily().checkAppClose(this);
+        return mSysContext.getSecurityPolicy().checkAppClose(this);
     }
 
     public String getBaseUrl() {
@@ -744,4 +752,13 @@ public class XApplication implements XIApplication, XIWebContext {
         }
         return isValid;
     }
+
+    /**
+     * 设置安全策略
+     * @param policy
+     */
+    public void setAppSecurityPolicy(XSecurityPolicy policy) {
+        mSecurityPolicy = policy;
+    }
+
 }

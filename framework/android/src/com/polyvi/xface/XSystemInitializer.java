@@ -28,10 +28,12 @@ import android.content.Context;
 import android.content.SharedPreferences;
 
 import com.polyvi.xface.ams.XAMSComponent;
+import com.polyvi.xface.ams.XAppList;
 import com.polyvi.xface.ams.XIPreInstallListener;
 import com.polyvi.xface.ams.XIPreInstallTask;
 import com.polyvi.xface.ams.XPreinstalledAppBatchInstaller;
 import com.polyvi.xface.app.XAppInfo;
+import com.polyvi.xface.app.transferpolicy.XPreInstallAppsTransferPolicy;
 import com.polyvi.xface.core.XConfiguration;
 import com.polyvi.xface.core.XRuntime;
 import com.polyvi.xface.util.XAppUtils;
@@ -51,6 +53,7 @@ public class XSystemInitializer implements XSystemBootstrap,
     private XFaceMainActivity mActivity;
     private boolean mApkUpdate;
     private XRuntime mRuntime;
+    private XAppList mAppList;
 
     public XSystemInitializer(XFaceMainActivity activity) {
         mActivity = activity;
@@ -60,7 +63,7 @@ public class XSystemInitializer implements XSystemBootstrap,
     public void onSuccess() {
         mActivity.runOnUiThread(new Runnable() {
             public void run() {
-                mRuntime.runStartApp(mActivity.getStartParams());
+               runStartApp();
             }
         });
     }
@@ -115,11 +118,20 @@ public class XSystemInitializer implements XSystemBootstrap,
                 if (needPreInstall()) {
                     doPreInstall(ams, mRuntime);
                 } else {
-                    mRuntime.runStartApp(mActivity.getStartParams());
+                    runStartApp();
                 }
             }
         };
         new XStartAppDataInitiallizer(callback, mActivity).execute();
+    }
+
+    /**
+     * 运行startApp
+     */
+    private void runStartApp(){
+        mRuntime.runStartApp(mActivity.getStartParams());
+        // 后台转移预装应用
+        new XPreInstallAppsTransferPolicy(mAppList, mActivity).transfer();
     }
 
     /**
@@ -155,6 +167,7 @@ public class XSystemInitializer implements XSystemBootstrap,
     private XAMSComponent createAMSComponent(XRuntime runtime) {
         XAMSComponent amsCom = new XAMSComponent(mActivity,
                 runtime.getAppFactory());
+        mAppList = amsCom.getAppList();
         return amsCom;
     }
 

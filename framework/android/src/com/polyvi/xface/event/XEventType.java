@@ -36,12 +36,16 @@ public interface XEventType {
     public static final int KEYUP = 7;
     // push消息
     public static final int PUSH_MSG_RECEIVED = 8;
-    //关闭应用
+    // 关闭应用
     public static final int CLOSE_APP = 9;
-    //关闭引擎
+    // 关闭引擎
     public static final int CLOSE_ENGINE = 10;
-    //app间通信事件
+    // app间通信事件
     public static final int XAPP_MESSAGE = 11;
+    // 预装app转移完成事件
+    public static final int TRANSFER_COMPLETE = 12;
+    // 预装app的md5校验失败事件
+    public static final int MD5_INVALID = 13;
     //用户自定义事件类型
     public static final int USER_CUSTOM_EVENT = 10000;
 }

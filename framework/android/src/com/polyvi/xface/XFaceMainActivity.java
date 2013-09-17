@@ -595,7 +595,8 @@ public class XFaceMainActivity extends Activity implements XISystemContext{
     }
 
     @Override
-    public XSecurityPolicy getSecurityPolily() {
+    public XSecurityPolicy getSecurityPolicy() {
         return mSecurityPolicy;
     }
+
 }
