@@ -116,7 +116,9 @@ public class XTransferSecurityPolicy implements XSecurityPolicy, XFileVisitor {
         // src前面有file协议会无法找到相应路径，所以需要去掉file协议头
         appSrcRoot = appSrcRoot.split(XConstant.FILE_SCHEME)[1];
         XFileUtils.walkDirectory(appSrcRoot, this);
-        return XTransferPolicyUtils.calAppMd5(mMd5Array, mCryptor);
+        String md5 = XTransferPolicyUtils.calAppMd5(mMd5Array, mCryptor);
+        mMd5Array.clear();
+        return md5;
     }
 
     /**

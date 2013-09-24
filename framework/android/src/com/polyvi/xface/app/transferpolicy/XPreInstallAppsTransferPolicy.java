@@ -148,6 +148,7 @@ public class XPreInstallAppsTransferPolicy implements XISystemEventReceiver {
                                 + transferPath);
                         data.put(APP_MD5, XTransferPolicyUtils.calAppMd5(
                                 mMd5Array, mCryptor));
+                        mMd5Array.clear();
                         XEvent evt = XEvent.createEvent(
                                 XEventType.TRANSFER_COMPLETE, data);
                         XSystemEventCenter.getInstance().sendEventAsync(evt);
