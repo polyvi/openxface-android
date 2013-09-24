@@ -257,7 +257,8 @@ public class XAppExt extends XExtension {
         XPathResolver fileResolver = new XPathResolver(path, webContext.getWorkSpace());
         String absPath = fileResolver.resolve();
         Uri uri = null;
-        if (path.startsWith(XConstant.HTTP_SCHEME)) {
+        if (path.startsWith(XConstant.HTTP_SCHEME) ||
+                path.startsWith(XConstant.HTTPS_SCHEME)) {
             uri = Uri.parse(absPath);
         } else {
             File file = new File(absPath);
