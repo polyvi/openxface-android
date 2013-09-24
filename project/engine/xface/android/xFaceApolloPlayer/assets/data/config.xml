@@ -21,7 +21,7 @@
         <preference name="CheckUpdate" value="false" />
         <preference name="UpdateAddress" value="" />
         <!-- 加载应用时等待xface.js是否加载完成的时间 -->
-        <preference name="LoadUrlTimeout" value="5000" />
+        <preference name="LoadUrlTimeout" value="15000" />
     </xFace>
     <extensions>
         <extension name="Accelerometer" value="com.polyvi.xface.extension.XAccelerometerExt" />
