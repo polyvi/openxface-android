@@ -110,7 +110,7 @@ app.prototype.getChannel = function(successCallback, errorCallback){
         navigator.app.startNativeApp(url, parameter, win, fail);
  * @method startNativeApp
  * @param {String} packageName 对于android平台，此参数是指程序AndroidManifest.xml配置文件中配置的package属性值，即程序的包名；<br /> 对于iOS平台，此参数是指Info.plist中定义的Custome URL Scheme，请参考<a href="http://developer.apple.com/library/ios/#documentation/iPhone/Conceptual/iPhoneOSProgrammingGuide/AdvancedAppTricks/AdvancedAppTricks.html" class="crosslink">Custom URL Schemes</a>, <a class="crosslink" href="http://wiki.akosma.com/IPhone_URL_Schemes">IPhone URL Schemes</a>, <a class="crosslink" href="http://developer.apple.com/library/ios/#featuredarticles/iPhoneURLScheme_Reference/Introduction/Introduction.html#//apple_ref/doc/uid/TP40007899">iPhone URL Scheme Reference</a><br /> 对于WP8平台，此参数是指WMAppManifest.xml中定义的Custome URL Scheme,请参考<a href="http://msdn.microsoft.com/en-us/library/windowsphone/develop/jj206987(v=vs.105).aspx" class="crosslink">Auto-launching apps using file and URI associations for Windows Phone 8</a>
- * @param {String} [parameter] 程序启动的参数
+ * @param {String} [parameter] 程序启动的参数:<br />对于android平台，此参数是获取Intent的"start_params"属性的对应值；<br />
  * @param {Function} [successCallback] 成功回调函数
  * @param {Function} [errorCallback] 失败回调函数
  * @for App
