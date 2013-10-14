@@ -55,6 +55,7 @@ import com.polyvi.xface.util.XStringUtils;
 public class XPreInstallAppsTransferPolicy implements XISystemEventReceiver {
     private static final String CLASS_NAME = XPreInstallAppsTransferPolicy.class
             .getSimpleName();
+    private static final long THREAD_SLEEP_TIME = 700;
     public static final String APP_ID = "appId";
     public static final String APP_SRC_ROOT = "srcRoot";
     public static final String APP_MD5 = "md5";
@@ -253,6 +254,15 @@ public class XPreInstallAppsTransferPolicy implements XISystemEventReceiver {
             for (String child : childrens) {
                 String srcFilePath = srcDir + File.separator + child;
                 if (XAssetsFileUtils.isFile(mCtx, srcFilePath)) {
+                    // 为了缩短应用启动时间，拷贝每个文件的时候线程sleep一段时间
+                    try {
+                        Thread.sleep(THREAD_SLEEP_TIME);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                        XLog.e(CLASS_NAME,
+                                "copyAssetsDirAndCalMd5: Thread sleep InterruptedException");
+                        return false;
+                    }
                     // 求出.html, .js, .htm文件的md5值
                     if (srcFilePath.endsWith(".html")
                             || srcFilePath.endsWith(".js")
