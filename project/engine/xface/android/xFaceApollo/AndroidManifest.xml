@@ -23,7 +23,14 @@
         </activity>
         <activity android:name="com.polyvi.xface.extension.zbar.XCameraActivity" >
         </activity>
-         <meta-data
+        <activity android:name="com.polyvi.xface.extension.camera.ImageCroppingActivity"  >
+            <intent-filter>
+                <action android:name="android.intent.action.XFACE_IMAGE_CROP" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </activity>
+        <meta-data
             android:name="UMENG_APPKEY"
             android:value="51de72fd56240b549d001092" >
         </meta-data>

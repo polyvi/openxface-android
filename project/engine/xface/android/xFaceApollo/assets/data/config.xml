@@ -27,7 +27,7 @@
         <extension name="Accelerometer" value="com.polyvi.xface.extension.XAccelerometerExt" />
         <extension name="App" value="com.polyvi.xface.extension.XAppExt" />
         <extension name="Battery" value="com.polyvi.xface.extension.XBatteryExt" />
-        <extension name="Camera" value="com.polyvi.xface.extension.XCameraExt" />
+        <extension name="Camera" value="com.polyvi.xface.extension.camera.XCameraExt" />
         <extension name="Compass" value="com.polyvi.xface.extension.XCompassExt" />
         <extension name="Console" value="com.polyvi.xface.extension.XConsoleExt" />
         <extension name="Device" value="com.polyvi.xface.extension.XDeviceExt" />
