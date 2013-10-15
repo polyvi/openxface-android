@@ -341,18 +341,13 @@ public class XCameraExt extends XExtension implements XActivityResultListener {
 
         // 为裁剪后的图片在程序工作空间中创建一个空文件，裁剪程序会将裁剪后的图片数据填入此文件中
         Uri cropped_image_uri = createEmptyFileForCroppedImageBeforeCrop();
-
-        // 准备启动图片裁剪
-        Intent intent = new Intent(CROP_IMAGE_ACTION);
-
-        // 要被裁剪的图片的URI
+        Intent intent = new Intent();
         intent.putExtra(ImageCroppingActivity.SOURCE_IMAGE_URI, uri);
-
-        // 裁剪后的图片URI
         intent.putExtra(ImageCroppingActivity.CROPPED_IMAGE_URI, cropped_image_uri);
-        mExtensionContext.getSystemContext()
-                         .startActivityForResult(this, intent, PICTURE_CUT_REQUEST_CODE);
+        intent.setClass(getContext(), ImageCroppingActivity.class);
+        mExtensionContext.getSystemContext().startActivityForResult(this, intent, PICTURE_CUT_REQUEST_CODE);
         return true;
+
     }
 
     /**
