@@ -88,6 +88,7 @@ AmsError.IO_ERROR = 3;
  * @platform Android,iOS,WP8
  * @since 3.0.0
  */
+
 AmsError.NO_TARGET_APP = 4;
 /**
  * 应用包中的配置文件不存在
@@ -98,6 +99,48 @@ AmsError.NO_TARGET_APP = 4;
  * @since 3.0.0
  */
 AmsError.NO_APP_CONFIG_FILE = 5;
+
+
+/**
+ * 启动的应用不存在
+ * @property APP_NOT_FOUND
+ * @type Number
+ * @final
+ * @platform Android,iOS,WP8
+ * @since 3.1.0
+ */
+AmsError.APP_NOT_FOUND = 7;
+
+/**
+ * 应用已经启动
+ * @property APP_ALREADY_RUNNING
+ * @type Number
+ * @final
+ * @platform Android,iOS,WP8
+ * @since 3.1.0
+ */
+AmsError.APP_ALREADY_RUNNING = 8;
+
+/**
+ * 应用入口错误
+ * @property APP_ENTRY_ERR
+ * @type Number
+ * @final
+ * @platform Android,iOS,WP8
+ * @since 3.1.0
+ */
+AmsError.APP_ENTRY_ERR = 9;
+
+/**
+ * 启动native应用错误
+ * @property START_NATIVE_APP_ERR
+ * @type Number
+ * @final
+ * @platform Android,iOS,WP8
+ * @since 3.1.0
+ */
+AmsError.START_NATIVE_APP_ERR = 10;
+
 /**
  * 未知错误
  * @property UNKNOWN
@@ -106,6 +149,6 @@ AmsError.NO_APP_CONFIG_FILE = 5;
  * @platform Android,iOS,WP8
  * @since 3.0.0
  */
-AmsError.UNKNOWN = 7;
+AmsError.UNKNOWN = 11;
 
 module.exports = AmsError;

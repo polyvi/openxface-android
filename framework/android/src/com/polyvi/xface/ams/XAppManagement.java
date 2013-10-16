@@ -1,4 +1,3 @@
-
 /*
  Copyright 2012-2013, Polyvi Inc. (http://polyvi.github.io/openxface)
  This program is distributed under the terms of the GNU General Public License.
@@ -17,7 +16,7 @@
 
  You should have received a copy of the GNU General Public License
  along with xFace.  If not, see <http://www.gnu.org/licenses/>.
-*/
+ */
 
 package com.polyvi.xface.ams;
 
@@ -27,6 +26,7 @@ import java.util.Iterator;
 import java.util.Stack;
 
 import com.polyvi.xface.XStartParams;
+import com.polyvi.xface.ams.XAMSError.AMS_ERROR;
 import com.polyvi.xface.app.XApplication;
 import com.polyvi.xface.app.XApplicationCreator;
 import com.polyvi.xface.app.XIApplication;
@@ -113,11 +113,13 @@ public class XAppManagement {
      *
      * @return 启动应用是否成功
      */
-    public boolean startApp(String appId, XStartParams params) {
+    public boolean startApp(String appId, XStartParams params,
+            XAppStartListener startListener) {
         XIApplication app = getAppList().getAppById(appId);
         if (null == app) {
             XLog.w(CLASS_NAME, "Start app failed, can't find app by id: "
                     + appId);
+            startListener.onError(appId, AMS_ERROR.APP_NOT_FOUND);
             return false;
         }
         String startData = null;
@@ -127,23 +129,33 @@ public class XAppManagement {
         if (isNativeApp(app)) {
             String entry = app.getAppInfo().getEntry();
             if (XStringUtils.isEmptyString(entry)) {
+                startListener.onError(appId, AMS_ERROR.APP_ENTRY_ERR);
                 return false;
             }
             if (!mNativeAppInstallDelegate.isAppInstalled(entry)) {
                 String apkPath = XNativeAppInstallDelegate
                         .getApkPathFromInstallDir(appId);
                 if (XStringUtils.isEmptyString(apkPath)
-                        || !new File(apkPath).exists())
+                        || !new File(apkPath).exists()) {
+                    startListener.onError(appId, AMS_ERROR.APP_NOT_FOUND);
                     return false;
+                }
                 mNativeAppInstallDelegate.installApp(apkPath,
                         EMPTRY_INSTALL_LISTENER);
                 return true;
             }
-            return app.start(params);
+            if (!app.start(params)) {
+                startListener.onError(appId, AMS_ERROR.START_NATIVE_APP_ERR);
+                return false;
+            } else {
+                startListener.onSuccess(appId);
+                return true;
+            }
         } else {
             // 如果app处于活动状态即已经被启动，不能再次被启动
             XApplication webApp = XApplicationCreator.toWebApp(app);
             if (webApp.isActive()) {
+                startListener.onError(appId, AMS_ERROR.APP_ALREADY_RUNNING);
                 return false;
             }
             mAppStack.push(webApp);
@@ -158,9 +170,9 @@ public class XAppManagement {
                 webApp.setData(XConstant.TAG_APP_START_PARAMS, startData);
             }
             webApp.start(params);
+            startListener.onSuccess(appId);
             return true;
         }
-
     }
 
     /**

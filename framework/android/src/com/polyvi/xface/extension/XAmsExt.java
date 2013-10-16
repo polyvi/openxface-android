@@ -1,4 +1,3 @@
-
 /*
  Copyright 2012-2013, Polyvi Inc. (http://polyvi.github.io/openxface)
  This program is distributed under the terms of the GNU General Public License.
@@ -17,7 +16,7 @@
 
  You should have received a copy of the GNU General Public License
  along with xFace.  If not, see <http://www.gnu.org/licenses/>.
-*/
+ */
 
 package com.polyvi.xface.extension;
 
@@ -30,6 +29,7 @@ import org.json.JSONObject;
 
 import com.polyvi.xface.ams.XAppInstallListener;
 import com.polyvi.xface.ams.XAppList;
+import com.polyvi.xface.ams.XAppStartListenerImp;
 import com.polyvi.xface.app.XIApplication;
 import com.polyvi.xface.extension.XExtensionResult.Status;
 import com.polyvi.xface.plugin.api.XIWebContext;
@@ -138,12 +138,9 @@ public class XAmsExt extends XExtension {
         mExtensionContext.getSystemContext().runOnUiThread(new Runnable() {
             public void run() {
                 // 由于会操作到UI，确保在UI线程中执行
-                boolean sucessful = mAms.startApp(fAppId, fParams);
-                if (sucessful) {
-                    cbContext.success(fAppId);
-                } else {
-                    cbContext.error(fAppId);
-                }
+                XAppStartListenerImp startResult = new XAppStartListenerImp(
+                        cbContext);
+                mAms.startApp(fAppId, fParams, startResult);
             }
         });
     }

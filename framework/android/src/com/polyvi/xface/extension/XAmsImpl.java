@@ -1,4 +1,3 @@
-
 /*
  Copyright 2012-2013, Polyvi Inc. (http://polyvi.github.io/openxface)
  This program is distributed under the terms of the GNU General Public License.
@@ -17,7 +16,7 @@
 
  You should have received a copy of the GNU General Public License
  along with xFace.  If not, see <http://www.gnu.org/licenses/>.
-*/
+ */
 
 package com.polyvi.xface.extension;
 
@@ -25,10 +24,11 @@ import java.io.File;
 import java.io.IOException;
 
 import com.polyvi.xface.XStartParams;
+import com.polyvi.xface.ams.XAMSError.AMS_ERROR;
 import com.polyvi.xface.ams.XAppList;
 import com.polyvi.xface.ams.XAppManagement;
+import com.polyvi.xface.ams.XAppStartListener;
 import com.polyvi.xface.ams.XInstallListener;
-import com.polyvi.xface.ams.XInstallListener.AMS_ERROR;
 import com.polyvi.xface.ams.XInstallListener.AMS_OPERATION_TYPE;
 import com.polyvi.xface.plugin.api.XIWebContext;
 import com.polyvi.xface.util.XFileUtils;
@@ -48,8 +48,10 @@ public class XAmsImpl implements XAms {
     }
 
     @Override
-    public boolean startApp(String appId, String params) {
-        return mAppManagement.startApp(appId, XStartParams.parse(params));
+    public boolean startApp(String appId, String params,
+            XAppStartListener startListener) {
+        return mAppManagement.startApp(appId, XStartParams.parse(params),
+                startListener);
     }
 
     @Override

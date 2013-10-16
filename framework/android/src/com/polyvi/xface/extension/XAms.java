@@ -22,6 +22,7 @@
 package com.polyvi.xface.extension;
 
 import com.polyvi.xface.ams.XAppList;
+import com.polyvi.xface.ams.XAppStartListener;
 import com.polyvi.xface.ams.XInstallListener;
 import com.polyvi.xface.plugin.api.XIWebContext;
 
@@ -32,23 +33,23 @@ public interface XAms {
 
     /**
      * 启动一个应用
-     * 
+     *
      * @param appId
      *            应用的id
      * @param params
      *            启动程序参数
      * @return ture:启动成功,false:启动失败
      */
-    public abstract boolean startApp(String appId, String params);
+    public abstract boolean startApp(String appId, String params, XAppStartListener startListener);
 
     /**
      * 安装一个应用
-     * 
+     *
      * @param webContext
      *            调用该接口的应用对象
      * @param path
      *            应用安装包的相对路径（路径开头的/表示应用的工作目录）
-     * 
+     *
      * @param listner
      *            安装监听器
      */
@@ -57,7 +58,7 @@ public interface XAms {
 
     /**
      * 更新一个应用
-     * 
+     *
      * @param webContext
      *            调用该接口的应用对象
      * @param path
@@ -70,7 +71,7 @@ public interface XAms {
 
     /**
      * 卸载应用
-     * 
+     *
      * @param appId
      * @param listener
      *            卸载监听器
@@ -79,21 +80,21 @@ public interface XAms {
 
     /**
      * 关闭应用
-     * 
+     *
      * @param appId
      */
     public abstract void closeApp(String appId);
 
     /**
      * 获取应用列表
-     * 
+     *
      * @return
      */
     public abstract XAppList getAppList();
 
     /**
      * 获取预置包
-     * 
+     *
      * @param startAppWorkSpace startApp的工作空间
      * @return 返回预置包数组，每一项是预置包名
      * */
