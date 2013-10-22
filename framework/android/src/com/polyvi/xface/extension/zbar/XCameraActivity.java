@@ -21,6 +21,8 @@
 
 package com.polyvi.xface.extension.zbar;
 
+import java.io.UnsupportedEncodingException;
+
 import net.sourceforge.zbar.Config;
 import net.sourceforge.zbar.Image;
 import net.sourceforge.zbar.ImageScanner;
@@ -148,16 +150,24 @@ public class XCameraActivity extends Activity {
 
                 playVibrate();// 振动代表成功获取二维码
 
-                for (Symbol sym : syms) {
-                    // 将扫描后的信息返回
-                    Intent intent = new Intent();
-                    intent.putExtra("Code", sym.getData());
-                    setResult(RESULT_OK, intent);
-                    finish();
-                }
-            }
-        }
-    };
+				for (Symbol sym : syms) {
+					try {
+						byte[] b = sym.getDataBytes();
+						if (b[0] == -24) {
+							b = sym.getData().getBytes("sjis");
+						}
+						String str = new String(b);
+						Intent intent = new Intent();
+						intent.putExtra("Code", str);
+						setResult(RESULT_OK, intent);
+						finish();
+					} catch (UnsupportedEncodingException e) {
+						e.printStackTrace();
+					}
+				}
+			}
+		}
+	};
 
     // Mimic continuous auto-focusing
     private AutoFocusCallback autoFocusCB = new AutoFocusCallback() {
