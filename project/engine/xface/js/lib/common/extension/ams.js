@@ -149,6 +149,9 @@ AMS.prototype.uninstallApplication = function( appId, successCallback, errorCall
         };
         function errorCallback(error){
             console.log(error.appid);
+            if( error.code == AmsError.APP_ALREADY_RUNNING) {
+                console.log("APP_ALREADY_RUNNING");
+            }
         };
         if(isAndroid()){
             xFace.AMS.startApplication("appId", successCallback, errorCallback, "Admin;123");
@@ -164,6 +167,7 @@ AMS.prototype.uninstallApplication = function( appId, successCallback, errorCall
  * @param {Function} [errorCallback]          失败时的回调函数
  * @param {Object}  errorCallback.error     包含错误信息的对象，每个object包含如下属性:
  * @param {String}  errorCallback.error.appid  发生错误的app的id号
+ * @param {String}  errorCallback.error.code  错误码，具体错误码参考<a href="../classes/AmsError.html" class="crosslink">AmsError</a>
  * @param {String}  [params] 程序启动参数，默认值为空 <br /> <a href="http://developer.apple.com/library/ios/#documentation/iPhone/Conceptual/iPhoneOSProgrammingGuide/AdvancedAppTricks/AdvancedAppTricks.html" class="crosslink">iOS: 请参考Custom URL Schemes</a>
  * @platform Android, iOS, WP8
  * @since 3.0.0

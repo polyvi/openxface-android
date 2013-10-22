@@ -31,20 +31,6 @@
  * @since 3.0.0
  */
 function AmsError(error) {
- /**
-  * 应用操作的错误码，用于表示具体的应用操作的错误(Android, iOS, WP8)<br/>
-  * 其取值范围参考{{#crossLink "AmsError"}}{{/crossLink}}中定义的常量
-  * @example
-        function errorCallback(amsError) {
-            if( amsError.code == AmsError.NO_SRC_PACKAGE) {
-                print("Package does not exist");
-            }
-        }
-  * @property code
-  * @type Number
-  * @platform Android, iOS, WP8
-  * @since 3.0.0
-  */
   this.code = error || null;
 }
 
