@@ -28,7 +28,6 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteException;
-import android.webkit.WebSettings;
 
 import com.polyvi.xface.XSecurityPolicy;
 import com.polyvi.xface.app.XApplication;
@@ -46,9 +45,7 @@ import com.polyvi.xface.util.XStringUtils;
  *
  */
 public class XOnlineMode extends XAppRunningMode implements XAppCheckListener {
-    private static final int BUFFER_SIZE = 1024*1024*8;
     private static final String CLASS_NAME = XOnlineMode.class.getName();
-    private static String mCachePath;
     /** HTML5离线应用缓存的数据库名称*/
     public static final String OFFLINE_DATABASE_NAME = "ApplicationCache.db";
     /** HTML5离线应用缓存的数据库绝对路径*/
@@ -59,8 +56,6 @@ public class XOnlineMode extends XAppRunningMode implements XAppCheckListener {
     private static final String LOCALSTORAGE = "localstorage";
 
     public XOnlineMode() {
-        //example: /mnt/sdcard/Android/data/com.paas.xface/applications/sys_data/app_cache
-        mCachePath = XConfiguration.getInstance().getSysDataDir() + XConstant.APP_CACHE_PATH;
         //example: /mnt/sdcard/Android/data/com.paas.xface/applications/sys_data/app_cache/ApplicationCache.db
         mDataBasePath = XConfiguration.getInstance().getSysDataDir()
                 + XConstant.APP_CACHE_PATH + File.separator + XOnlineMode.OFFLINE_DATABASE_NAME;
@@ -111,18 +106,6 @@ public class XOnlineMode extends XAppRunningMode implements XAppCheckListener {
     public void clearAppData(XApplication app, Context context) {
         clearOfflineAppCache(getAppUrl(app));
         clearAppLocalStorage(getAppUrl(app), app.getAppId(), context.getFilesDir().getParent());
-    }
-
-    public void setAppCachedPolicy(WebSettings settings) {
-        File file = new File(mCachePath);
-        if( !file.exists() ) {
-            file.mkdirs();
-        }
-        settings.setAppCachePath(mCachePath);
-        settings.setAppCacheMaxSize(BUFFER_SIZE);
-        settings.setAppCacheEnabled(true);
-        settings.setAllowFileAccess(true);
-        settings.setCacheMode(WebSettings.LOAD_NO_CACHE);
     }
 
     @Override
