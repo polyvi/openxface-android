@@ -9,7 +9,7 @@ import com.polyvi.xface.extension.XCallbackContext;
 public class XAppStartListenerImp implements XAppStartListener {
 
     private final static String TAG_APP_ID = "appid";
-    private final static String TAG_ERROR_CODE = "code";
+    private final static String TAG_ERROR_CODE = "errorcode";
 
     /** js回调上下文环境 */
     private XCallbackContext mCallbackCtx;
