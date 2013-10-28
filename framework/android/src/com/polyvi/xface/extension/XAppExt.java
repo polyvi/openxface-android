@@ -34,8 +34,8 @@ import android.net.Uri;
 import android.provider.Settings;
 
 import com.polyvi.xface.core.XConfiguration;
-import com.polyvi.xface.core.XISystemContext;
 import com.polyvi.xface.plugin.api.XIWebContext;
+import com.polyvi.xface.util.XAppUtils;
 import com.polyvi.xface.util.XConstant;
 import com.polyvi.xface.util.XFileUtils;
 import com.polyvi.xface.util.XLog;
@@ -79,16 +79,16 @@ public class XAppExt extends XExtension {
 
     @Override
     public boolean isAsync(String action) {
-        if (action.equals(COMMAND_START_SYSTEM_COMPONENT) ||
-                action.equals(COMMAND_OPEN_URL)) {
+        if (action.equals(COMMAND_START_SYSTEM_COMPONENT)
+                || action.equals(COMMAND_OPEN_URL)) {
             return false;
         }
         return true;
     }
 
     @Override
-    public XExtensionResult exec(String action,
-            JSONArray args, XCallbackContext callbackCtx) throws JSONException {
+    public XExtensionResult exec(String action, JSONArray args,
+            XCallbackContext callbackCtx) throws JSONException {
         XExtensionResult.Status status = XExtensionResult.Status.OK;
         String result = "";
         try {
@@ -105,7 +105,7 @@ public class XAppExt extends XExtension {
                     return new XExtensionResult(status, result);
                 }
                 setDirPermisionUntilWorkspace(mWebContext, uri);
-                setIntentByUri(intent,uri);
+                setIntentByUri(intent, uri);
                 getContext().startActivity(intent);
             } else if (COMMAND_INSTALL.equals(action)) {
                 XPathResolver pathResolver = new XPathResolver(
@@ -133,18 +133,20 @@ public class XAppExt extends XExtension {
             } else if (COMMAND_CLEAR_CACHE.equalsIgnoreCase(action)) {
                 clearCache(mWebContext);
             } else if (COMMAND_START_NATIVE_APP.equalsIgnoreCase(action)) {
-                if (!startNativeApp(mExtensionContext.getSystemContext(),
-                        args.getString(0), args.getString(1))) {
+                if (!XAppUtils.startNativeApp(mExtensionContext
+                        .getSystemContext().getContext(), args.getString(0),
+                        XConstant.TAG_APP_START_PARAMS, args.getString(1))) {
                     status = XExtensionResult.Status.ERROR;
                 }
             } else if (COMMAND_IS_NATIVE_APP_INSTALLED.equals(action)) {
                 boolean installResult = false;
-                if(isAppInstalled(args.getString(0))) {
+                if (isAppInstalled(args.getString(0))) {
                     installResult = true;
                 }
                 return new XExtensionResult(status, installResult);
             } else if (COMMAND_TEL_LINK_ENABLE.equals(action)) {
-                XConfiguration.getInstance().setTelLinkEnabled(args.optBoolean(0, true));
+                XConfiguration.getInstance().setTelLinkEnabled(
+                        args.optBoolean(0, true));
             } else {
                 status = XExtensionResult.Status.INVALID_ACTION;
                 result = "Unsupported Operation: " + action;
@@ -156,15 +158,13 @@ public class XAppExt extends XExtension {
         }
     }
 
-    private void setIntentByUri(Intent intent,Uri uri)
-    {
-        if(!XConstant.FILE_SCHEME.contains(uri.getScheme()))
-        {
+    private void setIntentByUri(Intent intent, Uri uri) {
+        if (!XConstant.FILE_SCHEME.contains(uri.getScheme())) {
             intent.setData(uri);
-        }else{
-             String mimeType = XFileUtils.getMIMEType(uri.toString());
-             intent.setDataAndType(uri,
-                     XStringUtils.isEmptyString(mimeType) ? "*/*" : mimeType);
+        } else {
+            String mimeType = XFileUtils.getMIMEType(uri.toString());
+            intent.setDataAndType(uri,
+                    XStringUtils.isEmptyString(mimeType) ? "*/*" : mimeType);
         }
 
     }
@@ -176,7 +176,8 @@ public class XAppExt extends XExtension {
             return;
         }
         String filePath = uri.getPath();
-        String workspace = new File(webContext.getWorkSpace()).getAbsolutePath();
+        String workspace = new File(webContext.getWorkSpace())
+                .getAbsolutePath();
         File fileObj = new File(filePath);
         do {
             String path = fileObj.getAbsolutePath();
@@ -254,11 +255,12 @@ public class XAppExt extends XExtension {
      *            url路径 return Uri 成功:uri,失败:null。
      */
     private Uri getUrlFromPath(XIWebContext webContext, String path) {
-        XPathResolver fileResolver = new XPathResolver(path, webContext.getWorkSpace());
+        XPathResolver fileResolver = new XPathResolver(path,
+                webContext.getWorkSpace());
         String absPath = fileResolver.resolve();
         Uri uri = null;
-        if (path.startsWith(XConstant.HTTP_SCHEME) ||
-                path.startsWith(XConstant.HTTPS_SCHEME)) {
+        if (path.startsWith(XConstant.HTTP_SCHEME)
+                || path.startsWith(XConstant.HTTPS_SCHEME)) {
             uri = Uri.parse(absPath);
         } else {
             File file = new File(absPath);
@@ -310,7 +312,8 @@ public class XAppExt extends XExtension {
             XIWebContext webContext) throws JSONException {
         XLog.d("App", "App.loadUrl(" + url + ",openExternal:" + openExternal
                 + ",clearHistory:" + clearHistory + ")");
-        webContext.getApplication().loadUrl(url, openExternal, clearHistory, getContext());
+        webContext.getApplication().loadUrl(url, openExternal, clearHistory,
+                getContext());
     }
 
     /**
@@ -339,39 +342,6 @@ public class XAppExt extends XExtension {
      */
     public void clearCache(XIWebContext webContext) {
         webContext.getApplication().clearCache();
-    }
-
-    /**
-     * 启动应用程序
-     *
-     * @param packageName
-     *            应用程序包的名字
-     * @param parameter
-     *            应用程序参数
-     * @return 成功返回true,失败返回false
-     */
-    public boolean startNativeApp(XISystemContext systemContext,
-            String packageName, String parameter) {
-        if (null == packageName) {
-            return false;
-        }
-
-        PackageManager pm = systemContext.getContext().getPackageManager();
-        Intent intent = null;
-        try {
-            intent = pm.getLaunchIntentForPackage(packageName);
-            if (null == intent) {
-                return false;
-            }
-            intent.putExtra(XConstant.TAG_APP_START_PARAMS, parameter);
-            systemContext.getContext().startActivity(intent);
-        } catch (Exception e) {
-            XLog.e(CLASS_NAME, "error when startNativeApp:" + e.getMessage());
-            e.printStackTrace();
-            return false;
-        }
-
-        return true;
     }
 
     /**
