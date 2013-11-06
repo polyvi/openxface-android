@@ -1,4 +1,3 @@
-
 /*
  Copyright 2012-2013, Polyvi Inc. (http://polyvi.github.io/openxface)
  This program is distributed under the terms of the GNU General Public License.
@@ -17,7 +16,7 @@
 
  You should have received a copy of the GNU General Public License
  along with xFace.  If not, see <http://www.gnu.org/licenses/>.
-*/
+ */
 
 package com.polyvi.xface.util;
 
@@ -157,7 +156,15 @@ public class XFileUtils {
         } else {
             path = XExternalStorageScanner.getExternalStoragePath();
         }
-        return path;
+        File filePath = null;
+        try {
+            filePath = new File(path).getCanonicalFile();
+        } catch (IOException e) {
+            XLog.e(CLASS_NAME, e.getMessage());
+            e.printStackTrace();
+            return null;
+        }
+        return filePath.getAbsolutePath();
     }
 
     /**
@@ -394,7 +401,7 @@ public class XFileUtils {
      *            解压的目标路径
      * @param zipFilePath
      *            zip包路径
-     * 
+     *
      * @return 是否成功
      */
     public static boolean unzipFile(String targetPath, String zipFilePath) {
@@ -638,7 +645,7 @@ public class XFileUtils {
      *
      * @param filePath
      *            [in] 文件路径
-     * 
+     *
      * @return
      * */
     public static boolean fileExists(Context context, String filePath) {
