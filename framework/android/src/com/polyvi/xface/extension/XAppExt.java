@@ -1,4 +1,3 @@
-
 /*
  This file was modified from or inspired by Apache Cordova.
 
@@ -10,7 +9,7 @@
  "License"); you may not use this file except in compliance
  with the License. You may obtain a copy of the License at
 
-    http://www.apache.org/licenses/LICENSE-2.0
+ http://www.apache.org/licenses/LICENSE-2.0
 
  Unless required by applicable law or agreed to in writing,
  software distributed under the License is distributed on an
@@ -18,24 +17,35 @@
  KIND, either express or implied. See the License for the
  specific language governing permissions and limitations
  under the License.
-*/
+ */
 
 package com.polyvi.xface.extension;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.IOException;
+import java.util.List;
 
 import org.json.JSONArray;
 import org.json.JSONException;
+import org.json.JSONObject;
 
 import android.content.Intent;
+import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.PackageManager.NameNotFoundException;
+import android.graphics.Bitmap;
+import android.graphics.Canvas;
+import android.graphics.PixelFormat;
+import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.provider.Settings;
+import android.util.Base64;
 
 import com.polyvi.xface.core.XConfiguration;
 import com.polyvi.xface.plugin.api.XIWebContext;
 import com.polyvi.xface.util.XAppUtils;
+import com.polyvi.xface.util.XBase64;
 import com.polyvi.xface.util.XConstant;
 import com.polyvi.xface.util.XFileUtils;
 import com.polyvi.xface.util.XLog;
@@ -56,8 +66,15 @@ public class XAppExt extends XExtension {
     private static final String COMMAND_START_NATIVE_APP = "startNativeApp";
     private static final String COMMAND_IS_NATIVE_APP_INSTALLED = "isNativeAppInstalled";
     private static final String COMMAND_TEL_LINK_ENABLE = "telLinkEnable";
+    private static final String COMMAND_QUERY_INSTALLED_NATIVEAPP = "queryInstalledNativeApp";
+    private static final String COMMAND_UNINSTALL_NATIVEAPP = "uninstallNativeApp";
 
     private static final String APK_TYPE = "application/vnd.android.package-archive";
+
+    /** 定义一些tag常量 */
+    private static final String TAG_APP_NAME = "name";
+    private static final String TAG_APP_ID = "id";
+    private static final String TAG_APP_ICON = "icon";
 
     /** 要启动的component名字 */
     public enum SysComponent {
@@ -147,6 +164,11 @@ public class XAppExt extends XExtension {
             } else if (COMMAND_TEL_LINK_ENABLE.equals(action)) {
                 XConfiguration.getInstance().setTelLinkEnabled(
                         args.optBoolean(0, true));
+            } else if (COMMAND_QUERY_INSTALLED_NATIVEAPP.equals(action)) {
+                return new XExtensionResult(status,
+                        queryInstalledNativeApp(args.getString(0)));
+            } else if (COMMAND_UNINSTALL_NATIVEAPP.equals(action)) {
+                uninstallNativeApp(args.getString(0));
             } else {
                 status = XExtensionResult.Status.INVALID_ACTION;
                 result = "Unsupported Operation: " + action;
@@ -363,5 +385,108 @@ public class XAppExt extends XExtension {
         } catch (NameNotFoundException e) {
             return false;
         }
+    }
+
+    /**
+     * 获取安装的程序列表包含系统应用和用户安装的应用
+     *
+     * @param type
+     *            应用类型。"0":代表所有应用，"1"：代表用户安装的应用,"2":代表系统应用
+     * @return 包含应用信息的应用列表
+     * @throws JSONException
+     */
+    public JSONArray queryInstalledNativeApp(String type) throws JSONException {
+        JSONArray appArray = new JSONArray();
+        int appType = Integer.valueOf(type);
+        PackageManager pm = getContext().getPackageManager();
+        List<PackageInfo> packages = pm.getInstalledPackages(0);
+        for (PackageInfo packageInfo : packages) {
+            switch (appType) {
+            case 0:
+                JSONObject obj = new JSONObject();
+                obj.put(TAG_APP_NAME,
+                        pm.getApplicationLabel(packageInfo.applicationInfo)
+                                .toString());
+                obj.put(TAG_APP_ID, packageInfo.applicationInfo.packageName);
+                obj.put(TAG_APP_ICON, drawableToBase64(pm
+                        .getApplicationIcon(packageInfo.applicationInfo)));
+                appArray.put(obj);
+                break;
+            case 1:
+                if ((packageInfo.applicationInfo.flags & 0x1) != 0)
+                    continue;
+                JSONObject userAppObj = new JSONObject();
+                userAppObj.put(TAG_APP_NAME,
+                        pm.getApplicationLabel(packageInfo.applicationInfo)
+                                .toString());
+                userAppObj.put(TAG_APP_ID,
+                        packageInfo.applicationInfo.packageName);
+                userAppObj.put(TAG_APP_ICON, drawableToBase64(pm
+                        .getApplicationIcon(packageInfo.applicationInfo)));
+                appArray.put(userAppObj);
+
+                break;
+            case 2:
+                if ((packageInfo.applicationInfo.flags & 0x1) == 0)
+                    continue;
+                JSONObject sysAppObj = new JSONObject();
+                sysAppObj.put(TAG_APP_NAME,
+                        pm.getApplicationLabel(packageInfo.applicationInfo)
+                                .toString());
+                sysAppObj.put(TAG_APP_ID,
+                        packageInfo.applicationInfo.packageName);
+                sysAppObj.put(TAG_APP_ICON, drawableToBase64(pm
+                        .getApplicationIcon(packageInfo.applicationInfo)));
+                appArray.put(sysAppObj);
+            }
+        }
+        return appArray;
+    }
+
+    /**
+     * 卸载native应用
+     *
+     * @param appId
+     *            应用的包名
+     */
+    public void uninstallNativeApp(String appId) {
+        Uri packageURI = Uri.parse("package:" + appId);
+        Intent uninstallIntent = new Intent(Intent.ACTION_DELETE, packageURI);
+        getContext().startActivity(uninstallIntent);
+    }
+
+    private String drawableToBase64(Drawable drawable) {
+        int width = drawable.getIntrinsicWidth();
+        int height = drawable.getIntrinsicHeight();
+        Bitmap bitmap = Bitmap.createBitmap(width, height, drawable
+                .getOpacity() != PixelFormat.OPAQUE ? Bitmap.Config.ARGB_8888
+                : Bitmap.Config.RGB_565);
+        Canvas canvas = new Canvas(bitmap);
+        drawable.setBounds(0, 0, width, height);
+        drawable.draw(canvas);
+        String result = null;
+        ByteArrayOutputStream baos = null;
+        try {
+            if (bitmap != null) {
+                baos = new ByteArrayOutputStream();
+                bitmap.compress(Bitmap.CompressFormat.PNG, 100, baos);
+                baos.flush();
+                baos.close();
+                byte[] bitmapBytes = baos.toByteArray();
+                result = XBase64.encodeToString(bitmapBytes, Base64.DEFAULT);
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                if (baos != null) {
+                    baos.flush();
+                    baos.close();
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+        return result;
     }
 }
