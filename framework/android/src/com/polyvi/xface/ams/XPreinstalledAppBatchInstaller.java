@@ -134,19 +134,18 @@ public class XPreinstalledAppBatchInstaller extends XAbstractPreIntaller {
                     "appId in app.xml not match to appId in config.xml");
             return null;
         }
-        return buildApplication(info, appDirNameInAsset);
+        return buildApplication(info, XConstant.ASSERT_PROTACAL + appDirNameInAsset);
     }
 
     private XIApplication buildApplication(XAppInfo info,
             String appDirNameInAsset) {
         XIApplication buildingApp = mAms.getAppById(info.getAppId());
         if (null != buildingApp) {
-            info.setSrcRoot(XConstant.ASSERT_PROTACAL + appDirNameInAsset);
+            info.setSrcRoot(appDirNameInAsset);
             mAms.updateApp(info, buildingApp);
         } else {
             buildingApp = mAms.getAppManagement().getAppCreator().create(info);
-            buildingApp.getAppInfo().setSrcRoot(
-                    XConstant.ASSERT_PROTACAL + appDirNameInAsset);
+            buildingApp.getAppInfo().setSrcRoot(appDirNameInAsset);
             mAms.add(buildingApp);
         }
 
