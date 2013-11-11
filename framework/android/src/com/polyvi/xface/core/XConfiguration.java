@@ -410,8 +410,9 @@ public class XConfiguration {
         if (!workDir.exists()) {
             workDir.mkdirs();
             // 修改文件夹的权限为其它用户可执行
-            XFileUtils.setPermission(XFileUtils.EXECUTABLE_BY_OTHER,
-                    workDir.getAbsolutePath());
+            XFileUtils.setPermissionUntilDir(
+                    XFileUtils.EXECUTABLE_BY_OTHER, workDir.getAbsolutePath(),
+                    "/");
         }
         return sb.toString();
     }

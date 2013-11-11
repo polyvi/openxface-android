@@ -71,7 +71,8 @@ public class XPlayerActivity extends XFaceMainActivity {
         if ((!workDir.exists()) && (!workDir.mkdir())) {
             return null;
         }
-        XFileUtils.setPermission(XFileUtils.EXECUTABLE_BY_OTHER, workDirName);
+        XFileUtils.setPermissionUntilDir(XFileUtils.EXECUTABLE_BY_OTHER,
+                workDirName, "/");
         return workDirName;
     }
 
