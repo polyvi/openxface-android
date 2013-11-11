@@ -156,6 +156,10 @@ public class XFileUtils {
         } else {
             path = XExternalStorageScanner.getExternalStoragePath();
         }
+        if (null == path) {
+            XLog.w(CLASS_NAME, "No External Storage");
+            return null;
+        }
         File filePath = null;
         try {
             filePath = new File(path).getCanonicalFile();
