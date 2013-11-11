@@ -370,7 +370,7 @@ public class XAppExt extends XExtension {
      * 清理资源缓存.
      */
     public void clearCache(XIWebContext webContext) {
-        webContext.getApplication().clearCache();
+        webContext.getApplication().clearCache(true);
     }
 
     /**

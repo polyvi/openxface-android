@@ -453,9 +453,10 @@ public class XApplication implements XIApplication, XIWebContext {
 
     /**
      * 清理页面缓存.
+     * @param includeDiskFile 是否包含磁盘文件
      */
-    public void clearCache() {
-        mAppView.clearCache();
+    public void clearCache(boolean includeDiskFile) {
+        mAppView.clearCache(includeDiskFile);
     }
 
     /**

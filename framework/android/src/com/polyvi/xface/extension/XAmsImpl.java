@@ -81,6 +81,7 @@ public class XAmsImpl implements XAms {
             String workspace = webContext.getWorkSpace();
             path = new File(workspace, path).getCanonicalPath();
             if (XFileUtils.isFileAncestorOf(workspace, path)) {
+                webContext.getApplication().clearCache(false);
                 mAppManagement.updateApp(path, listener);
             } else {
                 XLog.e(CLASS_NAME, "Can't update app in path: " + path
