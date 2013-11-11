@@ -68,7 +68,11 @@ public class XPlayerActivity extends XFaceMainActivity {
         String workDirName = baseDir + File.separator + XFACE_PLAYER_DIR_NAME
                 + File.separator;
         File workDir = new File(workDirName);
-        return workDir.exists() || workDir.mkdir() ? workDirName : null;
+        if ((!workDir.exists()) && (!workDir.mkdir())) {
+            return null;
+        }
+        XFileUtils.setPermission(XFileUtils.EXECUTABLE_BY_OTHER, workDirName);
+        return workDirName;
     }
 
     /**

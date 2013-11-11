@@ -30,7 +30,10 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.PackageManager.NameNotFoundException;
@@ -76,6 +79,9 @@ public class XAppExt extends XExtension {
     private static final String TAG_APP_ID = "id";
     private static final String TAG_APP_ICON = "icon";
 
+    private BroadcastReceiver mInstallerReceiver;
+    private String uninstallPackageName;
+
     /** 要启动的component名字 */
     public enum SysComponent {
         VPN_CONFIG, // vpn设置界面
@@ -91,7 +97,6 @@ public class XAppExt extends XExtension {
 
     @Override
     public void sendAsyncResult(String result) {
-
     }
 
     @Override
@@ -127,7 +132,8 @@ public class XAppExt extends XExtension {
             } else if (COMMAND_INSTALL.equals(action)) {
                 XPathResolver pathResolver = new XPathResolver(
                         args.getString(0), mWebContext.getWorkSpace());
-                install(pathResolver.resolve());
+                install(pathResolver.resolve(), callbackCtx);
+                return new XExtensionResult(XExtensionResult.Status.NO_RESULT);
             } else if (COMMAND_START_SYSTEM_COMPONENT.equals(action)) {
                 if (!startSystemComponent(args.getInt(0))) {
                     status = XExtensionResult.Status.ERROR;
@@ -168,7 +174,8 @@ public class XAppExt extends XExtension {
                 return new XExtensionResult(status,
                         queryInstalledNativeApp(args.getString(0)));
             } else if (COMMAND_UNINSTALL_NATIVEAPP.equals(action)) {
-                uninstallNativeApp(args.getString(0));
+                uninstallNativeApp(args.getString(0), callbackCtx);
+                return new XExtensionResult(XExtensionResult.Status.NO_RESULT);
             } else {
                 status = XExtensionResult.Status.INVALID_ACTION;
                 result = "Unsupported Operation: " + action;
@@ -188,7 +195,6 @@ public class XAppExt extends XExtension {
             intent.setDataAndType(uri,
                     XStringUtils.isEmptyString(mimeType) ? "*/*" : mimeType);
         }
-
     }
 
     private void setDirPermisionUntilWorkspace(XIWebContext webContext, Uri uri) {
@@ -222,7 +228,8 @@ public class XAppExt extends XExtension {
      * @param path
      *            要安装的apk本地文件的路径
      */
-    public void install(String path) {
+    public void install(String path, XCallbackContext callbackCtx) {
+        registerInstallerReceiver(callbackCtx);
         Intent intent = new Intent(Intent.ACTION_VIEW);
         // 修改文件的权限为其它用户可读, 否则系统apk安装程序无法安装
         XFileUtils.setPermission(XFileUtils.READABLE_BY_OTHER, path);
@@ -401,6 +408,9 @@ public class XAppExt extends XExtension {
         PackageManager pm = getContext().getPackageManager();
         List<PackageInfo> packages = pm.getInstalledPackages(0);
         for (PackageInfo packageInfo : packages) {
+            if (getContext().getPackageName().equals(
+                    packageInfo.applicationInfo.packageName))
+                continue;
             switch (appType) {
             case 0:
                 JSONObject obj = new JSONObject();
@@ -449,7 +459,9 @@ public class XAppExt extends XExtension {
      * @param appId
      *            应用的包名
      */
-    public void uninstallNativeApp(String appId) {
+    public void uninstallNativeApp(String appId, XCallbackContext callbackCtx) {
+        registerInstallerReceiver(callbackCtx);
+        uninstallPackageName = appId;
         Uri packageURI = Uri.parse("package:" + appId);
         Intent uninstallIntent = new Intent(Intent.ACTION_DELETE, packageURI);
         getContext().startActivity(uninstallIntent);
@@ -488,5 +500,39 @@ public class XAppExt extends XExtension {
             }
         }
         return result;
+    }
+
+    private void registerInstallerReceiver(final XCallbackContext callbackCtx) {
+        if (null == mInstallerReceiver) {
+            mInstallerReceiver = new BroadcastReceiver() {
+                @Override
+                public void onReceive(Context context, Intent intent) {
+                    if (intent.getAction().equals(
+                            "android.intent.action.PACKAGE_REMOVED")
+                            && (uninstallPackageName.equals(intent
+                                    .getDataString().substring(8)))) {
+                        XExtensionResult result = new XExtensionResult(
+                                XExtensionResult.Status.OK);
+                        callbackCtx.sendExtensionResult(result);
+                    }
+                    if (intent.getAction().equals(
+                            "android.intent.action.PACKAGE_ADDED")) {
+                        XExtensionResult result = new XExtensionResult(
+                                XExtensionResult.Status.OK);
+                        callbackCtx.sendExtensionResult(result);
+                    }
+                }
+            };
+            IntentFilter filter = new IntentFilter();
+            filter.addAction(Intent.ACTION_PACKAGE_ADDED);
+            filter.addAction(Intent.ACTION_PACKAGE_REMOVED);
+            filter.addDataScheme("package");
+            getContext().registerReceiver(mInstallerReceiver, filter);
+        }
+    }
+
+    @Override
+    public void destroy() {
+        getContext().unregisterReceiver(mInstallerReceiver);
     }
 }
