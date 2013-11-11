@@ -46,6 +46,7 @@ import android.graphics.Bitmap.CompressFormat;
 import android.graphics.Matrix;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
 import android.provider.MediaStore;
 
 import com.polyvi.xface.core.XConfiguration;
@@ -212,9 +213,15 @@ public class XCameraExt extends XExtension implements XActivityResultListener {
     }
 
     private Cursor queryImgDB() {
+        Uri contentUri = null;
+        if (Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED)) {
+            contentUri = android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI;
+        } else {
+            contentUri = android.provider.MediaStore.Images.Media.INTERNAL_CONTENT_URI;
+        }
+
         return mExtensionContext.getSystemContext().getContext().getContentResolver()
-                .query(android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
-                       new String[] { MediaStore.Images.Media._ID }, null, null, null);
+                .query(contentUri,new String[]{MediaStore.Images.Media._ID },null,null,null);
     }
 
     private File createCaptureFile(int encodingType) {
@@ -422,7 +429,10 @@ public class XCameraExt extends XExtension implements XActivityResultListener {
     private void checkForDuplicateImage(int type) {
         int diff = 1;
         Cursor cursor = queryImgDB();
-        int currentNumOfImages = cursor.getCount();
+        int currentNumOfImages = 0;
+        if(null != cursor){
+            currentNumOfImages = cursor.getCount();
+        }
 
         if (type == FILE_URI || type == NATIVE_URI) {
             diff = 2;
