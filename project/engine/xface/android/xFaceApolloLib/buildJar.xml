@@ -122,6 +122,9 @@
 			<zipfileset src="libs/umeng_sdk.jar"/>
 			<zipfileset src="libs/UPPayAssistEx.jar"/>
 			<zipfileset src="libs/zbar.jar"/>
+			<zipfileset src="libs/barcodedecoder.jar"/>
+			<zipfileset src="libs/barcodescanner.jar"/>
+			<zipfileset src="libs/cloudpay.jar"/>
 		</jar>
 	</target>
 
