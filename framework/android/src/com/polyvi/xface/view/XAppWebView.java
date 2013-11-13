@@ -277,7 +277,7 @@ public class XAppWebView extends WebView{
     }
 
     public void clearCache(boolean includeDiskFile) {
-        clearCache(includeDiskFile);
+        super.clearCache(includeDiskFile);
     }
 
     public void loadApp(String url, boolean showWaiting) {
